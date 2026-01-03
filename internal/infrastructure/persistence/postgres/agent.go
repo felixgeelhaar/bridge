@@ -193,7 +193,7 @@ func (r *AgentRepository) rowToAgent(row sqlc.Agent) (*agents.AgentEntity, error
 
 func floatToNumeric(f float64) pgtype.Numeric {
 	var n pgtype.Numeric
-	n.Scan(fmt.Sprintf("%.2f", f))
+	_ = n.Scan(fmt.Sprintf("%.2f", f))
 	return n
 }
 

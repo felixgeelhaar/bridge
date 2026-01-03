@@ -156,7 +156,7 @@ func (r *WorkflowRepository) CreateRun(ctx context.Context, run *workflow.Workfl
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	qtx := r.queries.WithTx(tx)
 

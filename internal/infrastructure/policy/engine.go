@@ -7,7 +7,7 @@ import (
 
 	"github.com/felixgeelhaar/bolt"
 	"github.com/felixgeelhaar/bridge/internal/domain/governance"
-	"github.com/open-policy-agent/opa/rego"
+	"github.com/open-policy-agent/opa/v1/rego"
 )
 
 // Engine wraps OPA for policy evaluation.

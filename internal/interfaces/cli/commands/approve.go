@@ -103,7 +103,7 @@ func runApprove(c *cli.Context) error {
 
 	// Approve and resume
 	formatter.Info(fmt.Sprintf("Approving run %s...", runID[:8]))
-	auditService.LogApprovalGranted(ctx, run.ID.String(), run.ID.String(), approver)
+	_ = auditService.LogApprovalGranted(ctx, run.ID.String(), run.ID.String(), approver)
 
 	// Resume workflow execution
 	err = orch.ResumeWorkflow(ctx, run)

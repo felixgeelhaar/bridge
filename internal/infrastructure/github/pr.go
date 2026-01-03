@@ -148,7 +148,7 @@ func (c *Client) GetPullRequestDiff(ctx context.Context, owner, repo string, num
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch diff: %w", err)
 	}
-	defer diffReq.Body.Close()
+	defer func() { _ = diffReq.Body.Close() }()
 
 	var diff []byte
 	if _, err := diffReq.Body.Read(diff); err != nil {

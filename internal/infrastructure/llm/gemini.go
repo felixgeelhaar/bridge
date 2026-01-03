@@ -184,11 +184,7 @@ func (p *GeminiProvider) Complete(ctx context.Context, req *CompletionRequest) (
 	if len(req.Tools) > 0 {
 		declarations := make([]geminiFunctionDecl, 0, len(req.Tools))
 		for _, tool := range req.Tools {
-			declarations = append(declarations, geminiFunctionDecl{
-				Name:        tool.Name,
-				Description: tool.Description,
-				Parameters:  tool.Parameters,
-			})
+			declarations = append(declarations, geminiFunctionDecl(tool))
 		}
 		apiReq.Tools = []geminiTool{{FunctionDeclarations: declarations}}
 	}
@@ -215,7 +211,7 @@ func (p *GeminiProvider) Complete(ctx context.Context, req *CompletionRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Read response body
 	respBody, err := io.ReadAll(resp.Body)

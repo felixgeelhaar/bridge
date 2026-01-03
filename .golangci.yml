@@ -2,25 +2,24 @@ version: "2"
 
 linters:
   default: standard
-  settings:
-    errcheck:
-      exclude-functions:
-        # Audit service methods (best-effort logging)
-        - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogWorkflowStarted
-        - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogWorkflowCompleted
-        - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogWorkflowFailed
-        - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogAgentCalled
-        - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogPolicyEvaluated
-        - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogPolicyViolation
-        # Workflow service state updates (best-effort during error paths)
-        - (*github.com/felixgeelhaar/bridge/internal/domain/workflow.Service).UpdateRun
-        - (*github.com/felixgeelhaar/bridge/internal/domain/workflow.Service).UpdateStep
-        # Test helpers
-        - (github.com/felixgeelhaar/bolt.Logger).Log
-        - (*encoding/json.Encoder).Encode
-  exclusions:
-    rules:
-      # Don't check test files as strictly
-      - path: _test\.go
-        linters:
-          - errcheck
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      # Audit service methods (best-effort logging)
+      - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogWorkflowStarted
+      - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogWorkflowCompleted
+      - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogWorkflowFailed
+      - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogAgentCalled
+      - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogPolicyEvaluated
+      - (*github.com/felixgeelhaar/bridge/internal/domain/governance.AuditService).LogPolicyViolation
+      # Workflow service state updates (best-effort during error paths)
+      - (*github.com/felixgeelhaar/bridge/internal/domain/workflow.Service).UpdateRun
+      - (*github.com/felixgeelhaar/bridge/internal/domain/workflow.Service).UpdateStep
+
+issues:
+  exclude-rules:
+    # Don't check test files as strictly for errcheck
+    - path: _test\.go
+      linters:
+        - errcheck

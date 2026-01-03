@@ -71,13 +71,13 @@ func (c *Connection) connect() error {
 
 	ch, err := conn.Channel()
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return fmt.Errorf("failed to open channel: %w", err)
 	}
 
 	if err := ch.Qos(c.config.PrefetchCount, 0, c.config.PrefetchGlobal); err != nil {
-		ch.Close()
-		conn.Close()
+		_ = ch.Close()
+		_ = conn.Close()
 		return fmt.Errorf("failed to set QoS: %w", err)
 	}
 

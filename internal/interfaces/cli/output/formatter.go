@@ -47,7 +47,7 @@ func (f *Formatter) Success(message string) {
 		})
 		return
 	}
-	fmt.Fprintf(f.writer, "✓ %s\n", message)
+	_, _ = fmt.Fprintf(f.writer, "✓ %s\n", message)
 }
 
 // Error prints an error message.
@@ -59,7 +59,7 @@ func (f *Formatter) Error(message string) {
 		})
 		return
 	}
-	fmt.Fprintf(f.writer, "✗ %s\n", message)
+	_, _ = fmt.Fprintf(f.writer, "✗ %s\n", message)
 }
 
 // Info prints an info message.
@@ -71,7 +71,7 @@ func (f *Formatter) Info(message string) {
 		})
 		return
 	}
-	fmt.Fprintf(f.writer, "ℹ %s\n", message)
+	_, _ = fmt.Fprintf(f.writer, "ℹ %s\n", message)
 }
 
 // Warning prints a warning message.
@@ -179,21 +179,21 @@ func (f *Formatter) RunList(runs []*workflow.WorkflowRun) {
 	}
 
 	if len(runs) == 0 {
-		fmt.Fprintln(f.writer, "No active runs")
+		_, _ = fmt.Fprintln(f.writer, "No active runs")
 		return
 	}
 
 	w := tabwriter.NewWriter(f.writer, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tWORKFLOW\tSTATUS\tCREATED")
+	_, _ = fmt.Fprintln(w, "ID\tWORKFLOW\tSTATUS\tCREATED")
 	for _, run := range runs {
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
+		_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
 			run.ID.String()[:8],
 			run.WorkflowName,
 			run.Status,
 			run.CreatedAt.Format("2006-01-02 15:04:05"),
 		)
 	}
-	w.Flush()
+	_ = w.Flush()
 }
 
 // ValidationResult prints validation results.
@@ -208,22 +208,22 @@ func (f *Formatter) ValidationResult(valid bool, errors []string, warnings []str
 	}
 
 	if valid {
-		fmt.Fprintln(f.writer, "✓ Workflow is valid")
+		_, _ = fmt.Fprintln(f.writer, "✓ Workflow is valid")
 	} else {
-		fmt.Fprintln(f.writer, "✗ Workflow validation failed")
+		_, _ = fmt.Fprintln(f.writer, "✗ Workflow validation failed")
 	}
 
 	if len(errors) > 0 {
-		fmt.Fprintln(f.writer, "\nErrors:")
+		_, _ = fmt.Fprintln(f.writer, "\nErrors:")
 		for _, err := range errors {
-			fmt.Fprintf(f.writer, "  ✗ %s\n", err)
+			_, _ = fmt.Fprintf(f.writer, "  ✗ %s\n", err)
 		}
 	}
 
 	if len(warnings) > 0 {
-		fmt.Fprintln(f.writer, "\nWarnings:")
+		_, _ = fmt.Fprintln(f.writer, "\nWarnings:")
 		for _, warn := range warnings {
-			fmt.Fprintf(f.writer, "  ⚠ %s\n", warn)
+			_, _ = fmt.Fprintf(f.writer, "  ⚠ %s\n", warn)
 		}
 	}
 }
@@ -308,9 +308,9 @@ func (f *Formatter) Table(headers []string, rows [][]string) {
 	}
 
 	w := tabwriter.NewWriter(f.writer, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, strings.Join(headers, "\t"))
+	_, _ = fmt.Fprintln(w, strings.Join(headers, "\t"))
 	for _, row := range rows {
-		fmt.Fprintln(w, strings.Join(row, "\t"))
+		_, _ = fmt.Fprintln(w, strings.Join(row, "\t"))
 	}
-	w.Flush()
+	_ = w.Flush()
 }

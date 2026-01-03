@@ -121,11 +121,6 @@ func (c *Client) post(ctx context.Context, path string, body, result any) error 
 	return c.request(ctx, "POST", path, body, result)
 }
 
-// patch performs a PATCH request to the GitHub API.
-func (c *Client) patch(ctx context.Context, path string, body, result any) error {
-	return c.request(ctx, "PATCH", path, body, result)
-}
-
 // delete performs a DELETE request to the GitHub API.
 func (c *Client) delete(ctx context.Context, path string) error {
 	return c.request(ctx, "DELETE", path, nil, nil)

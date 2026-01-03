@@ -169,12 +169,8 @@ func (p *OllamaProvider) Complete(ctx context.Context, req *CompletionRequest) (
 	// Convert tools
 	for _, tool := range req.Tools {
 		apiReq.Tools = append(apiReq.Tools, ollamaTool{
-			Type: "function",
-			Function: ollamaFunction{
-				Name:        tool.Name,
-				Description: tool.Description,
-				Parameters:  tool.Parameters,
-			},
+			Type:     "function",
+			Function: ollamaFunction(tool),
 		})
 	}
 
@@ -197,7 +193,7 @@ func (p *OllamaProvider) Complete(ctx context.Context, req *CompletionRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Read response body
 	respBody, err := io.ReadAll(resp.Body)
