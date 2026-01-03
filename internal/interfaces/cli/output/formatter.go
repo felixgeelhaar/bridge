@@ -83,7 +83,7 @@ func (f *Formatter) Warning(message string) {
 		})
 		return
 	}
-	fmt.Fprintf(f.writer, "⚠ %s\n", message)
+	_, _ = fmt.Fprintf(f.writer, "⚠ %s\n", message)
 }
 
 // WorkflowDefinition prints workflow definition details.
@@ -100,11 +100,11 @@ func (f *Formatter) WorkflowDefinition(def *workflow.WorkflowDefinition) {
 		return
 	}
 
-	fmt.Fprintf(f.writer, "Workflow: %s\n", def.Name)
-	fmt.Fprintf(f.writer, "  Version:     %s\n", def.Version)
-	fmt.Fprintf(f.writer, "  Description: %s\n", def.Description)
-	fmt.Fprintf(f.writer, "  Steps:       %d\n", len(def.Steps))
-	fmt.Fprintf(f.writer, "  Triggers:    %d\n", len(def.Triggers))
+	_, _ = fmt.Fprintf(f.writer, "Workflow: %s\n", def.Name)
+	_, _ = fmt.Fprintf(f.writer, "  Version:     %s\n", def.Version)
+	_, _ = fmt.Fprintf(f.writer, "  Description: %s\n", def.Description)
+	_, _ = fmt.Fprintf(f.writer, "  Steps:       %d\n", len(def.Steps))
+	_, _ = fmt.Fprintf(f.writer, "  Triggers:    %d\n", len(def.Triggers))
 }
 
 // WorkflowRun prints workflow run details.
@@ -132,28 +132,28 @@ func (f *Formatter) WorkflowRun(run *workflow.WorkflowRun) {
 		return
 	}
 
-	fmt.Fprintf(f.writer, "Run: %s\n", run.ID.String())
-	fmt.Fprintf(f.writer, "  Workflow:     %s\n", run.WorkflowName)
-	fmt.Fprintf(f.writer, "  Status:       %s\n", f.statusIcon(run.Status))
-	fmt.Fprintf(f.writer, "  Triggered by: %s\n", run.TriggeredBy)
-	fmt.Fprintf(f.writer, "  Created:      %s\n", run.CreatedAt.Format(time.RFC3339))
+	_, _ = fmt.Fprintf(f.writer, "Run: %s\n", run.ID.String())
+	_, _ = fmt.Fprintf(f.writer, "  Workflow:     %s\n", run.WorkflowName)
+	_, _ = fmt.Fprintf(f.writer, "  Status:       %s\n", f.statusIcon(run.Status))
+	_, _ = fmt.Fprintf(f.writer, "  Triggered by: %s\n", run.TriggeredBy)
+	_, _ = fmt.Fprintf(f.writer, "  Created:      %s\n", run.CreatedAt.Format(time.RFC3339))
 
 	if run.StartedAt != nil {
-		fmt.Fprintf(f.writer, "  Started:      %s\n", run.StartedAt.Format(time.RFC3339))
+		_, _ = fmt.Fprintf(f.writer, "  Started:      %s\n", run.StartedAt.Format(time.RFC3339))
 	}
 	if run.CompletedAt != nil {
-		fmt.Fprintf(f.writer, "  Completed:    %s\n", run.CompletedAt.Format(time.RFC3339))
-		fmt.Fprintf(f.writer, "  Duration:     %s\n", run.Duration())
+		_, _ = fmt.Fprintf(f.writer, "  Completed:    %s\n", run.CompletedAt.Format(time.RFC3339))
+		_, _ = fmt.Fprintf(f.writer, "  Duration:     %s\n", run.Duration())
 	}
 	if run.Error != "" {
-		fmt.Fprintf(f.writer, "  Error:        %s\n", run.Error)
+		_, _ = fmt.Fprintf(f.writer, "  Error:        %s\n", run.Error)
 	}
 
 	// Print steps
 	if len(run.Steps) > 0 {
-		fmt.Fprintf(f.writer, "\n  Steps:\n")
+		_, _ = fmt.Fprintf(f.writer, "\n  Steps:\n")
 		for _, step := range run.Steps {
-			fmt.Fprintf(f.writer, "    %s %s (%s)\n",
+			_, _ = fmt.Fprintf(f.writer, "    %s %s (%s)\n",
 				f.stepStatusIcon(step.Status),
 				step.Name,
 				step.Status,
@@ -241,11 +241,11 @@ func (f *Formatter) ApprovalStatus(runID string, status string, approvedBy strin
 
 	switch status {
 	case "approved":
-		fmt.Fprintf(f.writer, "✓ Run %s approved by %s\n", runID[:8], approvedBy)
+		_, _ = fmt.Fprintf(f.writer, "✓ Run %s approved by %s\n", runID[:8], approvedBy)
 	case "rejected":
-		fmt.Fprintf(f.writer, "✗ Run %s rejected by %s\n", runID[:8], approvedBy)
+		_, _ = fmt.Fprintf(f.writer, "✗ Run %s rejected by %s\n", runID[:8], approvedBy)
 	default:
-		fmt.Fprintf(f.writer, "ℹ Run %s: %s\n", runID[:8], status)
+		_, _ = fmt.Fprintf(f.writer, "ℹ Run %s: %s\n", runID[:8], status)
 	}
 }
 
@@ -288,7 +288,7 @@ func (f *Formatter) stepStatusIcon(status workflow.StepStatus) string {
 func (f *Formatter) printJSON(data any) {
 	enc := json.NewEncoder(f.writer)
 	enc.SetIndent("", "  ")
-	enc.Encode(data)
+	_ = enc.Encode(data)
 }
 
 // Table prints data as a table.
