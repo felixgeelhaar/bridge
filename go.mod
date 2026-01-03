@@ -11,20 +11,11 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-// Replace directives for local development of felixgeelhaar libraries
-// These will be replaced with actual versions once published
-replace (
-	github.com/felixgeelhaar/bolt => ../open_source/bolt
-	github.com/felixgeelhaar/fortify => ../open_source/fortify
-	github.com/felixgeelhaar/mcp-go => ../open_source/mcp-go
-	github.com/felixgeelhaar/statekit => ../open_source/statekit
-)
-
 require (
-	github.com/felixgeelhaar/bolt v0.0.0
-	github.com/felixgeelhaar/fortify v1.1.2
-	github.com/felixgeelhaar/mcp-go v0.0.0
-	github.com/felixgeelhaar/statekit v0.0.0
+	github.com/felixgeelhaar/bolt v1.2.2-0.20251017140801-af325d5350a8
+	github.com/felixgeelhaar/fortify v1.1.3-0.20260103140816-333b8e495bdf
+	github.com/felixgeelhaar/mcp-go v1.4.0
+	github.com/felixgeelhaar/statekit v1.0.1
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/rabbitmq/amqp091-go v1.10.0
 )

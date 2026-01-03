@@ -25,6 +25,14 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
+github.com/felixgeelhaar/bolt v1.2.2-0.20251017140801-af325d5350a8 h1:rGK1SI78a4k7mY4sFAa1Tfo7m7DSr6d0cxWTTstAT6A=
+github.com/felixgeelhaar/bolt v1.2.2-0.20251017140801-af325d5350a8/go.mod h1:F2rG7IiusJpvjlHqpQz7Yflrux9G5+4l9HLXy3dMCiI=
+github.com/felixgeelhaar/fortify v1.1.3-0.20260103140816-333b8e495bdf h1:PQkCX1n59O7qQsg9205x1aG9DyGgCiQk3L59xj0bYaU=
+github.com/felixgeelhaar/fortify v1.1.3-0.20260103140816-333b8e495bdf/go.mod h1:+JBmX7va4NVUAHCYml9/4w3PAVU/7geQmwZfIA3+wU4=
+github.com/felixgeelhaar/mcp-go v1.4.0 h1:3KePTAEllB2nlc2FB7iIGLe0nJKF8JKobC6k2nTEDvw=
+github.com/felixgeelhaar/mcp-go v1.4.0/go.mod h1:mst8EzfTEix4U5HrnDDCIRo8+6etCNbJw1cizW6k3Gg=
+github.com/felixgeelhaar/statekit v1.0.1 h1:tW1QnLQOKC1L4cXR/lqhLLv/KoKtNTa9Kfaj2psjiiM=
+github.com/felixgeelhaar/statekit v1.0.1/go.mod h1:dg0ZE7IKw8E+KNdYit8hqpNZXlanokaWLB1FB/TdDWs=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
 github.com/foxcpp/go-mockdns v1.1.0 h1:jI0rD8M0wuYAxL7r/ynTrCQQq0BVqfB99Vgk7DlmewI=
