@@ -61,11 +61,11 @@ type Subscriber struct {
 
 // SubscriberConfig holds subscriber configuration.
 type SubscriberConfig struct {
-	Exchange     string
-	QueuePrefix  string
-	Durable      bool
-	AutoDelete   bool
-	Exclusive    bool
+	Exchange    string
+	QueuePrefix string
+	Durable     bool
+	AutoDelete  bool
+	Exclusive   bool
 }
 
 // DefaultSubscriberConfig returns default subscriber configuration.

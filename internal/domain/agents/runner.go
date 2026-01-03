@@ -27,12 +27,12 @@ type Agent struct {
 
 // AgentResponse represents the result of an agent invocation.
 type AgentResponse struct {
-	Content    string
-	ToolCalls  []llm.ToolCall
-	TokensIn   int
-	TokensOut  int
-	Duration   time.Duration
-	Model      string
+	Content      string
+	ToolCalls    []llm.ToolCall
+	TokensIn     int
+	TokensOut    int
+	Duration     time.Duration
+	Model        string
 	FinishReason llm.FinishReason
 }
 
@@ -98,11 +98,11 @@ func (r *runner) Execute(ctx context.Context, agent *Agent, messages []llm.Messa
 
 	result := &AgentResponse{
 		Content:      resp.Content,
-		ToolCalls:   resp.ToolCalls,
-		TokensIn:    resp.Usage.InputTokens,
-		TokensOut:   resp.Usage.OutputTokens,
-		Duration:    resp.Latency,
-		Model:       resp.Model,
+		ToolCalls:    resp.ToolCalls,
+		TokensIn:     resp.Usage.InputTokens,
+		TokensOut:    resp.Usage.OutputTokens,
+		Duration:     resp.Latency,
+		Model:        resp.Model,
 		FinishReason: resp.FinishReason,
 	}
 
@@ -167,8 +167,8 @@ func DefaultAgents() []*Agent {
 - Potential bugs
 
 Provide specific, actionable feedback with code examples where helpful.`,
-			MaxTokens:   4096,
-			Temperature: 0.3,
+			MaxTokens:    4096,
+			Temperature:  0.3,
 			Capabilities: []string{"code-review", "security-analysis"},
 		},
 		{
@@ -185,8 +185,8 @@ Provide specific, actionable feedback with code examples where helpful.`,
 - Security misconfigurations
 
 Provide severity ratings and remediation steps.`,
-			MaxTokens:   4096,
-			Temperature: 0.2,
+			MaxTokens:    4096,
+			Temperature:  0.2,
 			Capabilities: []string{"security-analysis"},
 		},
 		{
@@ -200,8 +200,8 @@ Provide severity ratings and remediation steps.`,
 - Includes proper error handling
 - Is well-tested
 - Follows the project's coding style`,
-			MaxTokens:   8192,
-			Temperature: 0.5,
+			MaxTokens:    8192,
+			Temperature:  0.5,
 			Capabilities: []string{"code-generation"},
 		},
 	}

@@ -20,10 +20,10 @@ type mockEvent struct {
 	aggregate string
 }
 
-func (e *mockEvent) EventID() string      { return e.id }
-func (e *mockEvent) EventType() string    { return e.eventType }
+func (e *mockEvent) EventID() string       { return e.id }
+func (e *mockEvent) EventType() string     { return e.eventType }
 func (e *mockEvent) OccurredAt() time.Time { return e.timestamp }
-func (e *mockEvent) AggregateID() string  { return e.aggregate }
+func (e *mockEvent) AggregateID() string   { return e.aggregate }
 
 func newMockEvent(eventType string) *mockEvent {
 	return &mockEvent{

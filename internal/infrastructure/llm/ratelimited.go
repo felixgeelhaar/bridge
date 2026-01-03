@@ -33,11 +33,11 @@ func DefaultRateLimitConfig() RateLimitConfig {
 
 // tokenBucket implements a simple token bucket rate limiter.
 type tokenBucket struct {
-	mu           sync.Mutex
-	tokens       float64
-	maxTokens    float64
-	refillRate   float64 // tokens per second
-	lastRefill   time.Time
+	mu         sync.Mutex
+	tokens     float64
+	maxTokens  float64
+	refillRate float64 // tokens per second
+	lastRefill time.Time
 }
 
 func newTokenBucket(requestsPerMinute int, burstSize int) *tokenBucket {
@@ -128,9 +128,9 @@ var _ Provider = (*RateLimitedProvider)(nil)
 
 // ProviderFactory creates providers with all resilience patterns applied.
 type ProviderFactory struct {
-	logger         *bolt.Logger
-	resilientCfg   ResilientConfig
-	rateLimitCfg   RateLimitConfig
+	logger       *bolt.Logger
+	resilientCfg ResilientConfig
+	rateLimitCfg RateLimitConfig
 }
 
 // NewProviderFactory creates a new provider factory.

@@ -50,11 +50,11 @@ type Trigger struct {
 type TriggerType string
 
 const (
-	TriggerTypeManual      TriggerType = "manual"
-	TriggerTypeGitHubPR    TriggerType = "github.pull_request"
-	TriggerTypeGitHubPush  TriggerType = "github.push"
-	TriggerTypeWebhook     TriggerType = "webhook"
-	TriggerTypeCron        TriggerType = "cron"
+	TriggerTypeManual     TriggerType = "manual"
+	TriggerTypeGitHubPR   TriggerType = "github.pull_request"
+	TriggerTypeGitHubPush TriggerType = "github.push"
+	TriggerTypeWebhook    TriggerType = "webhook"
+	TriggerTypeCron       TriggerType = "cron"
 )
 
 // PolicyRef references a policy to be evaluated for this workflow.

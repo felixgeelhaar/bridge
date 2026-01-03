@@ -125,12 +125,12 @@ type TokenUsage struct {
 
 // StepResult represents the result of a step execution.
 type StepResult struct {
-	StepID    types.StepID
-	Status    StepStatus
-	Output    map[string]any
-	Tokens    TokenUsage
-	Duration  time.Duration
-	Error     string
+	StepID   types.StepID
+	Status   StepStatus
+	Output   map[string]any
+	Tokens   TokenUsage
+	Duration time.Duration
+	Error    string
 }
 
 // NewStepResult creates a step result from a step run.

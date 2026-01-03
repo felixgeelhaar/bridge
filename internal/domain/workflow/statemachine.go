@@ -11,38 +11,38 @@ import (
 type RunEvent string
 
 const (
-	EventStart           RunEvent = "START"
-	EventPolicyPass      RunEvent = "POLICY_PASS"
-	EventPolicyFail      RunEvent = "POLICY_FAIL"
+	EventStart            RunEvent = "START"
+	EventPolicyPass       RunEvent = "POLICY_PASS"
+	EventPolicyFail       RunEvent = "POLICY_FAIL"
 	EventApprovalRequired RunEvent = "APPROVAL_REQUIRED"
-	EventNoApproval      RunEvent = "NO_APPROVAL"
-	EventApproved        RunEvent = "APPROVED"
-	EventRejected        RunEvent = "REJECTED"
-	EventStepComplete    RunEvent = "STEP_COMPLETE"
-	EventStepFailed      RunEvent = "STEP_FAILED"
-	EventAllDone         RunEvent = "ALL_DONE"
-	EventHasNext         RunEvent = "HAS_NEXT"
-	EventRetry           RunEvent = "RETRY"
-	EventAbort           RunEvent = "ABORT"
-	EventCancel          RunEvent = "CANCEL"
-	EventTimeout         RunEvent = "TIMEOUT"
+	EventNoApproval       RunEvent = "NO_APPROVAL"
+	EventApproved         RunEvent = "APPROVED"
+	EventRejected         RunEvent = "REJECTED"
+	EventStepComplete     RunEvent = "STEP_COMPLETE"
+	EventStepFailed       RunEvent = "STEP_FAILED"
+	EventAllDone          RunEvent = "ALL_DONE"
+	EventHasNext          RunEvent = "HAS_NEXT"
+	EventRetry            RunEvent = "RETRY"
+	EventAbort            RunEvent = "ABORT"
+	EventCancel           RunEvent = "CANCEL"
+	EventTimeout          RunEvent = "TIMEOUT"
 )
 
 // RunContext holds the runtime context for workflow state machine.
 type RunContext struct {
-	Run             *WorkflowRun
-	CurrentStep     *StepRun
-	PolicyResult    *PolicyEvaluationResult
-	ApprovalResult  *ApprovalResult
-	LastError       error
+	Run            *WorkflowRun
+	CurrentStep    *StepRun
+	PolicyResult   *PolicyEvaluationResult
+	ApprovalResult *ApprovalResult
+	LastError      error
 }
 
 // PolicyEvaluationResult represents the result of policy evaluation.
 type PolicyEvaluationResult struct {
-	Allowed         bool
+	Allowed          bool
 	RequiresApproval bool
-	Reason          string
-	Violations      []string
+	Reason           string
+	Violations       []string
 }
 
 // ApprovalResult represents the result of an approval request.
@@ -63,41 +63,41 @@ func NewRunStateMachine() (*RunStateMachine, error) {
 		WithInitial("pending").
 		// Initial state - workflow scheduled but not started
 		State("pending").
-			On(statekit.EventType(EventStart)).Target("policy_check").
-			On(statekit.EventType(EventCancel)).Target("cancelled").
+		On(statekit.EventType(EventStart)).Target("policy_check").
+		On(statekit.EventType(EventCancel)).Target("cancelled").
 		Done().
 		// Policy evaluation before execution
 		State("policy_check").
-			On(statekit.EventType(EventPolicyPass)).Target("check_approval").
-			On(statekit.EventType(EventPolicyFail)).Target("failed").
+		On(statekit.EventType(EventPolicyPass)).Target("check_approval").
+		On(statekit.EventType(EventPolicyFail)).Target("failed").
 		Done().
 		// Check if approval is required
 		State("check_approval").
-			On(statekit.EventType(EventApprovalRequired)).Target("awaiting_approval").
-			On(statekit.EventType(EventNoApproval)).Target("executing").
+		On(statekit.EventType(EventApprovalRequired)).Target("awaiting_approval").
+		On(statekit.EventType(EventNoApproval)).Target("executing").
 		Done().
 		// Waiting for human approval
 		State("awaiting_approval").
-			On(statekit.EventType(EventApproved)).Target("executing").
-			On(statekit.EventType(EventRejected)).Target("cancelled").
-			On(statekit.EventType(EventTimeout)).Target("failed").
-			On(statekit.EventType(EventCancel)).Target("cancelled").
+		On(statekit.EventType(EventApproved)).Target("executing").
+		On(statekit.EventType(EventRejected)).Target("cancelled").
+		On(statekit.EventType(EventTimeout)).Target("failed").
+		On(statekit.EventType(EventCancel)).Target("cancelled").
 		Done().
 		// Main execution state
 		State("executing").
-			On(statekit.EventType(EventStepComplete)).Target("check_next").
-			On(statekit.EventType(EventStepFailed)).Target("step_failed").
-			On(statekit.EventType(EventCancel)).Target("cancelled").
+		On(statekit.EventType(EventStepComplete)).Target("check_next").
+		On(statekit.EventType(EventStepFailed)).Target("step_failed").
+		On(statekit.EventType(EventCancel)).Target("cancelled").
 		Done().
 		// Check if there are more steps
 		State("check_next").
-			On(statekit.EventType(EventHasNext)).Target("executing").
-			On(statekit.EventType(EventAllDone)).Target("completed").
+		On(statekit.EventType(EventHasNext)).Target("executing").
+		On(statekit.EventType(EventAllDone)).Target("completed").
 		Done().
 		// Handle step failure
 		State("step_failed").
-			On(statekit.EventType(EventRetry)).Target("executing").
-			On(statekit.EventType(EventAbort)).Target("failed").
+		On(statekit.EventType(EventRetry)).Target("executing").
+		On(statekit.EventType(EventAbort)).Target("failed").
 		Done().
 		// Terminal states
 		State("completed").Final().Done().
@@ -194,13 +194,13 @@ func NewStepStateMachine() (*StepStateMachine, error) {
 	machine, err := statekit.NewMachine[*StepRun]("step_execution").
 		WithInitial("pending").
 		State("pending").
-			On(statekit.EventType("EXECUTE")).Target("running").
-			On(statekit.EventType("SKIP")).Target("skipped").
+		On(statekit.EventType("EXECUTE")).Target("running").
+		On(statekit.EventType("SKIP")).Target("skipped").
 		Done().
 		State("running").
-			On(statekit.EventType("SUCCESS")).Target("completed").
-			On(statekit.EventType("FAILURE")).Target("failed").
-			On(statekit.EventType("TIMEOUT")).Target("failed").
+		On(statekit.EventType("SUCCESS")).Target("completed").
+		On(statekit.EventType("FAILURE")).Target("failed").
+		On(statekit.EventType("TIMEOUT")).Target("failed").
 		Done().
 		State("completed").Final().Done().
 		State("failed").Final().Done().

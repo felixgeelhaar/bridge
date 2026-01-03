@@ -181,8 +181,8 @@ func TestRole(t *testing.T) {
 
 // MockProvider is a mock implementation of Provider for testing.
 type MockProvider struct {
-	name      string
-	models    []string
+	name         string
+	models       []string
 	completeFunc func(*CompletionRequest) (*CompletionResponse, error)
 }
 

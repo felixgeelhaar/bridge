@@ -45,9 +45,9 @@ const (
 
 // WebhookPayload represents the common fields in a webhook payload.
 type WebhookPayload struct {
-	Action      WebhookAction `json:"action"`
-	Repository  Repository    `json:"repository"`
-	Sender      User          `json:"sender"`
+	Action       WebhookAction `json:"action"`
+	Repository   Repository    `json:"repository"`
+	Sender       User          `json:"sender"`
 	Installation *Installation `json:"installation,omitempty"`
 }
 
@@ -284,14 +284,14 @@ func (h *WebhookHandler) parsePayload(event WebhookEvent, body []byte) (any, err
 
 // TriggerData extracts workflow trigger data from a webhook payload.
 type TriggerData struct {
-	Event      string         `json:"event"`
-	Action     string         `json:"action"`
-	Repository RepoTrigger    `json:"repo"`
-	Sender     UserTrigger    `json:"sender"`
-	PR         *PRTrigger     `json:"pr,omitempty"`
-	Review     *ReviewTrigger `json:"review,omitempty"`
+	Event      string          `json:"event"`
+	Action     string          `json:"action"`
+	Repository RepoTrigger     `json:"repo"`
+	Sender     UserTrigger     `json:"sender"`
+	PR         *PRTrigger      `json:"pr,omitempty"`
+	Review     *ReviewTrigger  `json:"review,omitempty"`
 	Comment    *CommentTrigger `json:"comment,omitempty"`
-	Push       *PushTrigger   `json:"push,omitempty"`
+	Push       *PushTrigger    `json:"push,omitempty"`
 }
 
 // RepoTrigger contains repository trigger data.
@@ -309,18 +309,18 @@ type UserTrigger struct {
 
 // PRTrigger contains pull request trigger data.
 type PRTrigger struct {
-	Number     int    `json:"number"`
-	Title      string `json:"title"`
-	Body       string `json:"body"`
-	HeadRef    string `json:"head_ref"`
-	HeadSHA    string `json:"head_sha"`
-	BaseRef    string `json:"base_ref"`
-	BaseSHA    string `json:"base_sha"`
-	Draft      bool   `json:"draft"`
-	HTMLURL    string `json:"html_url"`
-	Additions  int    `json:"additions"`
-	Deletions  int    `json:"deletions"`
-	ChangedFiles int  `json:"changed_files"`
+	Number       int    `json:"number"`
+	Title        string `json:"title"`
+	Body         string `json:"body"`
+	HeadRef      string `json:"head_ref"`
+	HeadSHA      string `json:"head_sha"`
+	BaseRef      string `json:"base_ref"`
+	BaseSHA      string `json:"base_sha"`
+	Draft        bool   `json:"draft"`
+	HTMLURL      string `json:"html_url"`
+	Additions    int    `json:"additions"`
+	Deletions    int    `json:"deletions"`
+	ChangedFiles int    `json:"changed_files"`
 }
 
 // ReviewTrigger contains review trigger data.
@@ -391,15 +391,15 @@ func ExtractTriggerData(event WebhookEvent, payload any) (*TriggerData, error) {
 			Email: p.Sender.Email,
 		}
 		data.PR = &PRTrigger{
-			Number:   p.PullRequest.Number,
-			Title:    p.PullRequest.Title,
-			Body:     p.PullRequest.Body,
-			HeadRef:  p.PullRequest.Head.Ref,
-			HeadSHA:  p.PullRequest.Head.SHA,
-			BaseRef:  p.PullRequest.Base.Ref,
-			BaseSHA:  p.PullRequest.Base.SHA,
-			Draft:    p.PullRequest.Draft,
-			HTMLURL:  p.PullRequest.HTMLURL,
+			Number:  p.PullRequest.Number,
+			Title:   p.PullRequest.Title,
+			Body:    p.PullRequest.Body,
+			HeadRef: p.PullRequest.Head.Ref,
+			HeadSHA: p.PullRequest.Head.SHA,
+			BaseRef: p.PullRequest.Base.Ref,
+			BaseSHA: p.PullRequest.Base.SHA,
+			Draft:   p.PullRequest.Draft,
+			HTMLURL: p.PullRequest.HTMLURL,
 		}
 		data.Review = &ReviewTrigger{
 			ID:    p.Review.ID,

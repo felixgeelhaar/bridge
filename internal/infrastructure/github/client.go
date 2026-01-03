@@ -73,15 +73,15 @@ type User struct {
 
 // Repository represents a GitHub repository.
 type Repository struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	FullName    string `json:"full_name"`
-	Description string `json:"description"`
-	Private     bool   `json:"private"`
-	HTMLURL     string `json:"html_url"`
-	CloneURL    string `json:"clone_url"`
+	ID            int64  `json:"id"`
+	Name          string `json:"name"`
+	FullName      string `json:"full_name"`
+	Description   string `json:"description"`
+	Private       bool   `json:"private"`
+	HTMLURL       string `json:"html_url"`
+	CloneURL      string `json:"clone_url"`
 	DefaultBranch string `json:"default_branch"`
-	Owner       User   `json:"owner"`
+	Owner         User   `json:"owner"`
 }
 
 // Label represents a GitHub label.

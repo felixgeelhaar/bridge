@@ -12,11 +12,11 @@ import (
 
 // Config holds RabbitMQ connection configuration.
 type Config struct {
-	URL             string
-	ReconnectDelay  time.Duration
-	MaxReconnects   int
-	PrefetchCount   int
-	PrefetchGlobal  bool
+	URL            string
+	ReconnectDelay time.Duration
+	MaxReconnects  int
+	PrefetchCount  int
+	PrefetchGlobal bool
 }
 
 // DefaultConfig returns a default configuration.

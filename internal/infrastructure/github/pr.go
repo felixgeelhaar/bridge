@@ -8,31 +8,31 @@ import (
 
 // PullRequest represents a GitHub pull request.
 type PullRequest struct {
-	ID          int64      `json:"id"`
-	Number      int        `json:"number"`
-	State       string     `json:"state"`
-	Title       string     `json:"title"`
-	Body        string     `json:"body"`
-	HTMLURL     string     `json:"html_url"`
-	DiffURL     string     `json:"diff_url"`
-	PatchURL    string     `json:"patch_url"`
-	Draft       bool       `json:"draft"`
-	Merged      bool       `json:"merged"`
-	Mergeable   *bool      `json:"mergeable,omitempty"`
-	MergeableState string  `json:"mergeable_state,omitempty"`
-	Head        PRBranch   `json:"head"`
-	Base        PRBranch   `json:"base"`
-	User        User       `json:"user"`
-	Labels      []Label    `json:"labels"`
-	Reviewers   []User     `json:"requested_reviewers"`
-	Commits     int        `json:"commits"`
-	Additions   int        `json:"additions"`
-	Deletions   int        `json:"deletions"`
-	ChangedFiles int       `json:"changed_files"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	ClosedAt    *time.Time `json:"closed_at,omitempty"`
-	MergedAt    *time.Time `json:"merged_at,omitempty"`
+	ID             int64      `json:"id"`
+	Number         int        `json:"number"`
+	State          string     `json:"state"`
+	Title          string     `json:"title"`
+	Body           string     `json:"body"`
+	HTMLURL        string     `json:"html_url"`
+	DiffURL        string     `json:"diff_url"`
+	PatchURL       string     `json:"patch_url"`
+	Draft          bool       `json:"draft"`
+	Merged         bool       `json:"merged"`
+	Mergeable      *bool      `json:"mergeable,omitempty"`
+	MergeableState string     `json:"mergeable_state,omitempty"`
+	Head           PRBranch   `json:"head"`
+	Base           PRBranch   `json:"base"`
+	User           User       `json:"user"`
+	Labels         []Label    `json:"labels"`
+	Reviewers      []User     `json:"requested_reviewers"`
+	Commits        int        `json:"commits"`
+	Additions      int        `json:"additions"`
+	Deletions      int        `json:"deletions"`
+	ChangedFiles   int        `json:"changed_files"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+	ClosedAt       *time.Time `json:"closed_at,omitempty"`
+	MergedAt       *time.Time `json:"merged_at,omitempty"`
 }
 
 // PRBranch represents a branch reference in a pull request.
@@ -170,8 +170,8 @@ func (c *Client) CreatePRComment(ctx context.Context, owner, repo string, number
 
 // CreateReviewInput contains the input for creating a review.
 type CreateReviewInput struct {
-	Body     string           `json:"body,omitempty"`
-	Event    string           `json:"event"` // APPROVE, REQUEST_CHANGES, COMMENT
+	Body     string               `json:"body,omitempty"`
+	Event    string               `json:"event"` // APPROVE, REQUEST_CHANGES, COMMENT
 	Comments []ReviewCommentInput `json:"comments,omitempty"`
 }
 

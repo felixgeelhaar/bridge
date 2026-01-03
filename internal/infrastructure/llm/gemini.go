@@ -65,10 +65,10 @@ func (p *GeminiProvider) Models() []string {
 
 // geminiRequest is the request structure for Gemini API.
 type geminiRequest struct {
-	Contents         []geminiContent        `json:"contents"`
-	SystemInstruction *geminiContent        `json:"systemInstruction,omitempty"`
-	Tools            []geminiTool           `json:"tools,omitempty"`
-	GenerationConfig *geminiGenerationConfig `json:"generationConfig,omitempty"`
+	Contents          []geminiContent         `json:"contents"`
+	SystemInstruction *geminiContent          `json:"systemInstruction,omitempty"`
+	Tools             []geminiTool            `json:"tools,omitempty"`
+	GenerationConfig  *geminiGenerationConfig `json:"generationConfig,omitempty"`
 }
 
 type geminiContent struct {

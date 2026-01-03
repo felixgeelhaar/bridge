@@ -33,39 +33,39 @@ type PolicyRule struct {
 type Severity string
 
 const (
-	SeverityInfo    Severity = "info"
-	SeverityWarning Severity = "warning"
-	SeverityError   Severity = "error"
+	SeverityInfo     Severity = "info"
+	SeverityWarning  Severity = "warning"
+	SeverityError    Severity = "error"
 	SeverityCritical Severity = "critical"
 )
 
 // PolicyInput provides context for policy evaluation.
 type PolicyInput struct {
-	WorkflowID   string            `json:"workflow_id"`
-	WorkflowName string            `json:"workflow_name"`
-	RunID        string            `json:"run_id"`
-	StepName     string            `json:"step_name,omitempty"`
-	AgentID      string            `json:"agent_id,omitempty"`
-	AgentName    string            `json:"agent_name,omitempty"`
-	Capabilities []string          `json:"capabilities,omitempty"`
-	Context      map[string]any    `json:"context,omitempty"`
-	Metadata     map[string]any    `json:"metadata,omitempty"`
+	WorkflowID   string         `json:"workflow_id"`
+	WorkflowName string         `json:"workflow_name"`
+	RunID        string         `json:"run_id"`
+	StepName     string         `json:"step_name,omitempty"`
+	AgentID      string         `json:"agent_id,omitempty"`
+	AgentName    string         `json:"agent_name,omitempty"`
+	Capabilities []string       `json:"capabilities,omitempty"`
+	Context      map[string]any `json:"context,omitempty"`
+	Metadata     map[string]any `json:"metadata,omitempty"`
 }
 
 // PolicyResult contains the result of policy evaluation.
 type PolicyResult struct {
-	Allowed          bool              `json:"allowed"`
-	RequiresApproval bool              `json:"requires_approval"`
-	Violations       []Violation       `json:"violations,omitempty"`
-	Warnings         []Violation       `json:"warnings,omitempty"`
-	Metadata         map[string]any    `json:"metadata,omitempty"`
+	Allowed          bool           `json:"allowed"`
+	RequiresApproval bool           `json:"requires_approval"`
+	Violations       []Violation    `json:"violations,omitempty"`
+	Warnings         []Violation    `json:"warnings,omitempty"`
+	Metadata         map[string]any `json:"metadata,omitempty"`
 }
 
 // Violation represents a policy violation.
 type Violation struct {
-	Rule     string   `json:"rule"`
-	Message  string   `json:"message"`
-	Severity Severity `json:"severity"`
+	Rule     string         `json:"rule"`
+	Message  string         `json:"message"`
+	Severity Severity       `json:"severity"`
 	Details  map[string]any `json:"details,omitempty"`
 }
 

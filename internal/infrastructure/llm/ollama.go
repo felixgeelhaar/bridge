@@ -75,8 +75,8 @@ type ollamaRequest struct {
 }
 
 type ollamaMessage struct {
-	Role      string          `json:"role"`
-	Content   string          `json:"content"`
+	Role      string           `json:"role"`
+	Content   string           `json:"content"`
 	ToolCalls []ollamaToolCall `json:"tool_calls,omitempty"`
 }
 
@@ -109,16 +109,16 @@ type ollamaOptions struct {
 
 // ollamaResponse is the response structure from Ollama API.
 type ollamaResponse struct {
-	Model     string        `json:"model"`
-	CreatedAt string        `json:"created_at"`
-	Message   ollamaMessage `json:"message"`
-	Done      bool          `json:"done"`
-	TotalDuration     int64 `json:"total_duration"`
-	LoadDuration      int64 `json:"load_duration"`
-	PromptEvalCount   int   `json:"prompt_eval_count"`
-	PromptEvalDuration int64 `json:"prompt_eval_duration"`
-	EvalCount         int   `json:"eval_count"`
-	EvalDuration      int64 `json:"eval_duration"`
+	Model              string        `json:"model"`
+	CreatedAt          string        `json:"created_at"`
+	Message            ollamaMessage `json:"message"`
+	Done               bool          `json:"done"`
+	TotalDuration      int64         `json:"total_duration"`
+	LoadDuration       int64         `json:"load_duration"`
+	PromptEvalCount    int           `json:"prompt_eval_count"`
+	PromptEvalDuration int64         `json:"prompt_eval_duration"`
+	EvalCount          int           `json:"eval_count"`
+	EvalDuration       int64         `json:"eval_duration"`
 }
 
 type ollamaError struct {

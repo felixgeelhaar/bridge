@@ -25,8 +25,8 @@ type Approval struct {
 	WorkflowName string
 	StepName     string
 	Status       ApprovalStatus
-	RequiredBy   string // Who/what triggered the approval requirement
-	Reason       string // Why approval is needed
+	RequiredBy   string   // Who/what triggered the approval requirement
+	Reason       string   // Why approval is needed
 	Approvers    []string // List of allowed approvers
 	ApprovedBy   string
 	ApprovalNote string
@@ -147,8 +147,8 @@ type ApprovalRepository interface {
 
 // ApprovalService manages approval workflows.
 type ApprovalService struct {
-	repo      ApprovalRepository
-	notifier  ApprovalNotifier
+	repo     ApprovalRepository
+	notifier ApprovalNotifier
 }
 
 // ApprovalNotifier sends notifications about approval requests.

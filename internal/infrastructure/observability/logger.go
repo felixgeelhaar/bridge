@@ -10,9 +10,9 @@ import (
 
 // LogConfig contains logger configuration.
 type LogConfig struct {
-	Level   string
-	Format  string // "json" or "console"
-	Output  io.Writer
+	Level  string
+	Format string // "json" or "console"
+	Output io.Writer
 }
 
 // DefaultConfig returns the default logger configuration.

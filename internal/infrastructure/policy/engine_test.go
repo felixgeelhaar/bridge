@@ -183,29 +183,29 @@ requires_approval {
 	})
 
 	tests := []struct {
-		name             string
-		capabilities     []string
-		wantApproval     bool
+		name         string
+		capabilities []string
+		wantApproval bool
 	}{
 		{
-			name:             "requires approval for file-write",
-			capabilities:     []string{"file-read", "file-write"},
-			wantApproval:     true,
+			name:         "requires approval for file-write",
+			capabilities: []string{"file-read", "file-write"},
+			wantApproval: true,
 		},
 		{
-			name:             "requires approval for shell-exec",
-			capabilities:     []string{"shell-exec"},
-			wantApproval:     true,
+			name:         "requires approval for shell-exec",
+			capabilities: []string{"shell-exec"},
+			wantApproval: true,
 		},
 		{
-			name:             "no approval for read-only",
-			capabilities:     []string{"file-read"},
-			wantApproval:     false,
+			name:         "no approval for read-only",
+			capabilities: []string{"file-read"},
+			wantApproval: false,
 		},
 		{
-			name:             "no approval for empty capabilities",
-			capabilities:     []string{},
-			wantApproval:     false,
+			name:         "no approval for empty capabilities",
+			capabilities: []string{},
+			wantApproval: false,
 		},
 	}
 
@@ -567,19 +567,19 @@ func TestDefaultPolicyBundle(t *testing.T) {
 
 func TestPolicyResult_IsBlocking(t *testing.T) {
 	tests := []struct {
-		name    string
-		result  governance.PolicyResult
-		want    bool
+		name   string
+		result governance.PolicyResult
+		want   bool
 	}{
 		{
-			name:    "not blocking when allowed",
-			result:  governance.PolicyResult{Allowed: true},
-			want:    false,
+			name:   "not blocking when allowed",
+			result: governance.PolicyResult{Allowed: true},
+			want:   false,
 		},
 		{
-			name:    "blocking when not allowed",
-			result:  governance.PolicyResult{Allowed: false},
-			want:    true,
+			name:   "blocking when not allowed",
+			result: governance.PolicyResult{Allowed: false},
+			want:   true,
 		},
 		{
 			name: "blocking on critical violation",

@@ -19,15 +19,15 @@ type Provider interface {
 
 // CompletionRequest represents a request to an LLM.
 type CompletionRequest struct {
-	Model        string
-	SystemPrompt string
-	Messages     []Message
-	Tools        []Tool
-	MaxTokens    int
-	Temperature  float64
-	TopP         float64
+	Model         string
+	SystemPrompt  string
+	Messages      []Message
+	Tools         []Tool
+	MaxTokens     int
+	Temperature   float64
+	TopP          float64
 	StopSequences []string
-	Metadata     map[string]any
+	Metadata      map[string]any
 }
 
 // Message represents a chat message.

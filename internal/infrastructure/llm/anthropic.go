@@ -117,8 +117,8 @@ type anthropicUsage struct {
 }
 
 type anthropicError struct {
-	Type    string `json:"type"`
-	Error   anthropicErrorDetail `json:"error"`
+	Type  string               `json:"type"`
+	Error anthropicErrorDetail `json:"error"`
 }
 
 type anthropicErrorDetail struct {

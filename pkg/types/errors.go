@@ -29,11 +29,11 @@ var (
 	ErrPolicyInvalid   = errors.New("policy definition is invalid")
 
 	// Approval errors
-	ErrApprovalNotFound  = errors.New("approval not found")
-	ErrApprovalRequired  = errors.New("approval required")
-	ErrApprovalRejected  = errors.New("approval rejected")
-	ErrApprovalExpired   = errors.New("approval expired")
-	ErrApprovalPending   = errors.New("approval pending")
+	ErrApprovalNotFound = errors.New("approval not found")
+	ErrApprovalRequired = errors.New("approval required")
+	ErrApprovalRejected = errors.New("approval rejected")
+	ErrApprovalExpired  = errors.New("approval expired")
+	ErrApprovalPending  = errors.New("approval pending")
 
 	// Agent errors
 	ErrAgentNotFound    = errors.New("agent not found")

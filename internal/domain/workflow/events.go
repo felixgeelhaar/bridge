@@ -23,10 +23,10 @@ type BaseEvent struct {
 	Aggregate string    `json:"aggregate_id"`
 }
 
-func (e BaseEvent) EventID() string      { return e.ID }
-func (e BaseEvent) EventType() string    { return e.Type }
+func (e BaseEvent) EventID() string       { return e.ID }
+func (e BaseEvent) EventType() string     { return e.Type }
 func (e BaseEvent) OccurredAt() time.Time { return e.Timestamp }
-func (e BaseEvent) AggregateID() string  { return e.Aggregate }
+func (e BaseEvent) AggregateID() string   { return e.Aggregate }
 
 func newBaseEvent(eventType, aggregateID string) BaseEvent {
 	return BaseEvent{

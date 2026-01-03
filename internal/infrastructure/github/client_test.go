@@ -33,8 +33,8 @@ func TestNewClient(t *testing.T) {
 	logger := testLogger(t)
 
 	tests := []struct {
-		name   string
-		cfg    Config
+		name    string
+		cfg     Config
 		wantURL string
 	}{
 		{
