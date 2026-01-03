@@ -1077,10 +1077,10 @@
 
             <div class="code-example">
                 <div class="code-tabs">
-                    <button class="code-tab active">pr-review.yaml</button>
-                    <button class="code-tab">policy.rego</button>
+                    <button class="code-tab active" data-tab="yaml">pr-review.yaml</button>
+                    <button class="code-tab" data-tab="rego">policy.rego</button>
                 </div>
-                <div class="code-content">
+                <div class="code-content" id="tab-yaml">
                     <pre><span class="code-comment"># AI-assisted PR review with approval gate</span>
 <span class="code-property">name</span>: <span class="code-string">guarded-pr-review</span>
 <span class="code-property">version</span>: <span class="code-string">"1.0"</span>
@@ -1111,6 +1111,37 @@
 <span class="code-property">policies</span>:
   - <span class="code-property">name</span>: <span class="code-string">require-human-approval</span>
     <span class="code-property">rule</span>: <span class="code-string">steps.*.requires_approval == true</span></pre>
+                </div>
+                <div class="code-content" id="tab-rego" style="display: none;">
+                    <pre><span class="code-comment"># OPA/Rego policy for workflow governance</span>
+<span class="code-keyword">package</span> <span class="code-string">bridge.approval</span>
+
+<span class="code-keyword">import</span> <span class="code-string">rego.v1</span>
+
+<span class="code-comment"># Default: no approval required</span>
+<span class="code-keyword">default</span> <span class="code-property">requires_approval</span> := <span class="code-keyword">false</span>
+
+<span class="code-comment"># Require approval if step explicitly requests it</span>
+<span class="code-property">requires_approval</span> <span class="code-keyword">if</span> {
+    <span class="code-value">input.step.requires_approval</span> == <span class="code-keyword">true</span>
+}
+
+<span class="code-comment"># Require approval for high-risk workflows</span>
+<span class="code-property">requires_approval</span> <span class="code-keyword">if</span> {
+    <span class="code-value">input.workflow.risk_level</span> == <span class="code-string">"high"</span>
+}
+
+<span class="code-comment"># Require approval for production deployments</span>
+<span class="code-property">requires_approval</span> <span class="code-keyword">if</span> {
+    <span class="code-value">input.step.type</span> == <span class="code-string">"deploy"</span>
+    <span class="code-value">input.environment</span> == <span class="code-string">"production"</span>
+}
+
+<span class="code-comment"># Deny if security scan failed</span>
+<span class="code-property">deny</span>[<span class="code-value">msg</span>] <span class="code-keyword">if</span> {
+    <span class="code-value">input.security_scan.passed</span> == <span class="code-keyword">false</span>
+    <span class="code-value">msg</span> := <span class="code-string">"Security scan must pass before execution"</span>
+}</pre>
                 </div>
             </div>
         </div>
@@ -1242,8 +1273,16 @@
         // Code tabs
         document.querySelectorAll('.code-tab').forEach(tab => {
             tab.addEventListener('click', () => {
+                // Update active tab
                 document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
+
+                // Show corresponding content
+                const tabId = tab.dataset.tab;
+                document.querySelectorAll('.code-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.getElementById('tab-' + tabId).style.display = 'block';
             });
         });
 
