@@ -1,7 +1,6 @@
 package output_test
 
 import (
-	"bytes"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -30,13 +29,6 @@ func TestNewFormatter(t *testing.T) {
 			}
 		})
 	}
-}
-
-func newTestFormatter(format string) (*output.Formatter, *bytes.Buffer) {
-	f := output.NewFormatter(format)
-	buf := &bytes.Buffer{}
-	// Use reflection or a setter if available, otherwise test through public methods
-	return f, buf
 }
 
 func TestFormatter_Success_Text(t *testing.T) {
