@@ -80,7 +80,7 @@ func NewPool(ctx context.Context, cfg *Config, logger *bolt.Logger) (*Pool, erro
 		Str("host", cfg.Host).
 		Int("port", cfg.Port).
 		Str("database", cfg.Database).
-		Int32("max_conns", cfg.MaxConns).
+		Int("max_conns", int(cfg.MaxConns)).
 		Msg("PostgreSQL connection pool created")
 
 	return &Pool{pool: pool, logger: logger}, nil
