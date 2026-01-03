@@ -220,40 +220,40 @@ default allowed = true
 default requires_approval = false
 
 # Require approval for file write capabilities
-requires_approval {
+requires_approval if {
     input.capabilities[_] == "file-write"
 }
 
 # Require approval for shell execution
-requires_approval {
+requires_approval if {
     input.capabilities[_] == "shell-exec"
 }
 
 # Block access to sensitive paths
-allowed = false {
+allowed = false if {
     path := input.context.path
     contains(path, ".env")
 }
 
-allowed = false {
+allowed = false if {
     path := input.context.path
     contains(path, "secrets/")
 }
 
-allowed = false {
+allowed = false if {
     path := input.context.path
     contains(path, ".ssh/")
 }
 
 # Violation messages
-violation[msg] {
+violation contains msg if {
     not allowed
     path := input.context.path
     msg := sprintf("Access to sensitive path blocked: %s", [path])
 }
 
 # Token limit enforcement
-violation[msg] {
+violation contains msg if {
     input.context.max_tokens > 100000
     msg := sprintf("Token limit exceeded: %d > 100000", [input.context.max_tokens])
 }

@@ -98,11 +98,11 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     contains(input.context.path, ".env")
 }
 
-violation[msg] {
+violation contains msg if {
     not allowed
     msg := "Access to .env file blocked"
 }
@@ -172,11 +172,11 @@ package bridge.policy
 default allowed = true
 default requires_approval = false
 
-requires_approval {
+requires_approval if {
     input.capabilities[_] == "file-write"
 }
 
-requires_approval {
+requires_approval if {
     input.capabilities[_] == "shell-exec"
 }
 `,
@@ -278,7 +278,7 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     contains(input.context.path, "secrets/")
 }
 `,
@@ -295,7 +295,7 @@ package bridge.policy
 
 default requires_approval = false
 
-requires_approval {
+requires_approval if {
     input.capabilities[_] == "shell-exec"
 }
 `,
@@ -393,11 +393,11 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     input.context.max_tokens > 100000
 }
 
-violation[msg] {
+violation contains msg if {
     input.context.max_tokens > 100000
     msg := sprintf("Token limit exceeded: %d > 100000", [input.context.max_tokens])
 }
@@ -449,7 +449,7 @@ package bridge.policy
 
 default allowed = true
 
-violation[msg] {
+violation contains msg if {
     input.context.file_size > 1000000
     msg := "Processing large file, may be slow"
 }
@@ -490,7 +490,7 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     input.context.blocked == true
 }
 `
@@ -510,7 +510,7 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     # Invalid syntax - missing closing brace
     input.context.blocked == true
 `

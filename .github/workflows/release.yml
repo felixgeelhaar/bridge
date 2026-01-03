@@ -76,7 +76,7 @@ jobs:
         run: |
           go install github.com/securego/gosec/v2/cmd/gosec@latest
           go install golang.org/x/vuln/cmd/govulncheck@latest
-          go install github.com/gitleaks/gitleaks/v8@latest
+          go install github.com/zricethezav/gitleaks/v8@latest
 
       - name: Security scan (SAST)
         run: gosec -severity=high -fmt=json -out=gosec-report.json ./... || true

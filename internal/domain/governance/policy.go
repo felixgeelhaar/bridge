@@ -136,7 +136,7 @@ package bridge.policy
 
 default requires_approval = false
 
-requires_approval {
+requires_approval if {
     input.capabilities[_] == "file-write"
 }
 `,
@@ -152,15 +152,15 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     contains(input.context.path, ".env")
 }
 
-allowed = false {
+allowed = false if {
     contains(input.context.path, "secrets")
 }
 
-violation[msg] {
+violation contains msg if {
     not allowed
     msg := sprintf("Access to sensitive file blocked: %s", [input.context.path])
 }
@@ -177,11 +177,11 @@ package bridge.policy
 
 default allowed = true
 
-allowed = false {
+allowed = false if {
     input.context.max_tokens > 100000
 }
 
-violation[msg] {
+violation contains msg if {
     not allowed
     msg := sprintf("Token limit exceeded: %d > 100000", [input.context.max_tokens])
 }
