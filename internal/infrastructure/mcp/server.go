@@ -6,12 +6,12 @@ import (
 	"fmt"
 
 	"github.com/felixgeelhaar/bolt"
-	"github.com/felixgeelhaar/mcp-go"
+	mcplib "github.com/felixgeelhaar/mcp-go"
 )
 
 // Server wraps the MCP server for Bridge tool bindings.
 type Server struct {
-	mcpServer *mcp.Server
+	mcpServer *mcplib.Server
 	logger    *bolt.Logger
 	tools     *ToolRegistry
 	config    Config
@@ -81,14 +81,14 @@ type ToolResult struct {
 
 // NewServer creates a new MCP server.
 func NewServer(logger *bolt.Logger, cfg Config) *Server {
-	mcpServer := mcp.NewServer(mcp.ServerInfo{
+	mcpServer := mcplib.NewServer(mcplib.ServerInfo{
 		Name:    cfg.Name,
 		Version: cfg.Version,
-		Capabilities: mcp.Capabilities{
+		Capabilities: mcplib.Capabilities{
 			Tools:     true,
 			Resources: true,
 		},
-	}, mcp.WithInstructions(`
+	}, mcplib.WithInstructions(`
 Bridge provides tools for AI-assisted software development workflows.
 
 Available tools:
@@ -211,14 +211,14 @@ func (s *Server) registerResources() {
 		Name("Workflow Context").
 		Description("Current workflow execution context").
 		MimeType("application/json").
-		Handler(func(ctx context.Context, uri string, params map[string]string) (*mcp.ResourceContent, error) {
+		Handler(func(ctx context.Context, uri string, params map[string]string) (*mcplib.ResourceContent, error) {
 			// Return current workflow context (placeholder)
 			contextData := map[string]any{
 				"workflow": "current",
 				"step":     "active",
 			}
 			data, _ := json.Marshal(contextData)
-			return &mcp.ResourceContent{
+			return &mcplib.ResourceContent{
 				URI:      uri,
 				MimeType: "application/json",
 				Text:     string(data),
@@ -233,10 +233,10 @@ func (s *Server) Start(ctx context.Context) error {
 		Str("version", s.config.Version).
 		Msg("Starting MCP server")
 
-	return mcp.ServeStdio(ctx, s.mcpServer)
+	return mcplib.ServeStdio(ctx, s.mcpServer)
 }
 
 // GetMCPServer returns the underlying MCP server.
-func (s *Server) GetMCPServer() *mcp.Server {
+func (s *Server) GetMCPServer() *mcplib.Server {
 	return s.mcpServer
 }
