@@ -1,0 +1,29 @@
+# Bridge Code Owners
+# These owners will be requested for review when changes are made
+
+# Default owners for everything in the repo
+* @felixgeelhaar
+
+# Core domain logic
+/internal/domain/ @felixgeelhaar
+
+# Infrastructure and integrations
+/internal/infrastructure/ @felixgeelhaar
+
+# CLI interface
+/internal/interfaces/cli/ @felixgeelhaar
+
+# Security-sensitive files
+/internal/infrastructure/policy/ @felixgeelhaar
+/internal/domain/governance/ @felixgeelhaar
+/policies/ @felixgeelhaar
+
+# CI/CD and Docker
+/.github/ @felixgeelhaar
+/Dockerfile @felixgeelhaar
+/docker-compose*.yml @felixgeelhaar
+
+# Configuration
+/go.mod @felixgeelhaar
+/go.sum @felixgeelhaar
+/Makefile @felixgeelhaar

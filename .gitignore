@@ -1,0 +1,74 @@
+# Binaries
+bridge
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+dist/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+coverage.txt
+
+# Dependency directories
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+bin/
+build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Logs
+*.log
+logs/
+
+# Security reports
+gosec-report.json
+govulncheck-report.json
+gitleaks-report.json
+
+# Generated files (keep sqlc generated code)
+# internal/infrastructure/persistence/postgres/sqlc/*.go
+
+# Docker
+docker-compose.override.yml
+
+# Local config
+.bridge/
+*.local.yaml
+*.local.yml
+
+# Release artifacts
+RELEASE_NOTES.md
+CHANGELOG_NEW.md
+
+# Debug
+__debug_bin*
+.playwright-mcp/
+.claude/

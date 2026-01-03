@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  bridge:
+    build: .
+    container_name: bridge
+    environment:
+      - LOG_LEVEL=info
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET:-}
+      - DATABASE_URL=postgresql://bridge:bridge@postgres:5432/bridge?sslmode=disable
+      - RABBITMQ_URL=amqp://bridge:bridge@rabbitmq:5672/
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./workflows:/app/workflows:ro
+      - ./policies:/app/policies:ro
+    networks:
+      - bridge-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bridge-postgres
+    environment:
+      - POSTGRES_DB=bridge
+      - POSTGRES_USER=bridge
+      - POSTGRES_PASSWORD=bridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bridge -d bridge"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bridge-network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: bridge-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=bridge
+      - RABBITMQ_DEFAULT_PASS=bridge
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - bridge-network
+    restart: unless-stopped
+
+  # OPA for policy evaluation (optional)
+  opa:
+    image: openpolicyagent/opa:latest
+    container_name: bridge-opa
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "/policies"
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./policies:/policies:ro
+    networks:
+      - bridge-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+
+networks:
+  bridge-network:
+    driver: bridge

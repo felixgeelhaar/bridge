@@ -1,0 +1,315 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_level:
+        description: 'Version bump level'
+        required: true
+        type: choice
+        options:
+          - auto
+          - major
+          - minor
+          - patch
+        default: auto
+      prerelease:
+        description: 'Prerelease identifier (e.g., alpha, beta, rc)'
+        required: false
+        type: string
+      analyze:
+        description: 'Show commit analysis'
+        required: false
+        type: boolean
+        default: true
+
+env:
+  GO_VERSION: '1.23'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  plan:
+    name: Plan Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      risk: ${{ steps.plan.outputs.risk }}
+      breaking: ${{ steps.plan.outputs.breaking }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Analyze commits
+        id: plan
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "## Commit Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run relicta plan
+          if [ "${{ inputs.analyze }}" == "true" ]; then
+            relicta plan --analyze > plan-output.txt 2>&1 || true
+          else
+            relicta plan > plan-output.txt 2>&1 || true
+          fi
+
+          cat plan-output.txt >> $GITHUB_STEP_SUMMARY
+
+          # Extract version suggestion
+          SUGGESTED_VERSION=$(grep -oP 'Suggested version: \K[^\s]+' plan-output.txt || echo "")
+          echo "Suggested version: $SUGGESTED_VERSION"
+
+          # Check for breaking changes
+          BREAKING=$(grep -c "BREAKING" plan-output.txt || echo "0")
+
+          echo "version=$SUGGESTED_VERSION" >> $GITHUB_OUTPUT
+          echo "breaking=$BREAKING" >> $GITHUB_OUTPUT
+
+          # Determine risk level
+          if [ "$BREAKING" -gt 0 ]; then
+            echo "risk=high" >> $GITHUB_OUTPUT
+          else
+            echo "risk=low" >> $GITHUB_OUTPUT
+          fi
+
+  validate:
+    name: Validate Release
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Validate release requirements
+        run: |
+          echo "## Release Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check git state
+          echo "### Git State" >> $GITHUB_STEP_SUMMARY
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "- Working tree is dirty" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- Working tree is clean" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Check branch
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "- Current branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
+          if [ "$BRANCH" != "main" ]; then
+            echo "  - Warning: Not on main branch" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Run tests
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Tests" >> $GITHUB_STEP_SUMMARY
+          if go test -race ./... > test-output.txt 2>&1; then
+            echo "- All tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- Some tests failed" >> $GITHUB_STEP_SUMMARY
+            cat test-output.txt >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Check coverage
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Coverage" >> $GITHUB_STEP_SUMMARY
+          go test -coverprofile=coverage.out ./... > /dev/null 2>&1
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}')
+          echo "- Total coverage: $COVERAGE" >> $GITHUB_STEP_SUMMARY
+
+  bump:
+    name: Bump Version
+    needs: [plan, validate]
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.bump.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Determine version
+        id: bump
+        run: |
+          LEVEL="${{ inputs.bump_level }}"
+          PRERELEASE="${{ inputs.prerelease }}"
+
+          # Build bump command
+          BUMP_CMD="relicta bump --level $LEVEL"
+          if [ -n "$PRERELEASE" ]; then
+            BUMP_CMD="$BUMP_CMD --prerelease $PRERELEASE"
+          fi
+
+          echo "Running: $BUMP_CMD"
+          NEW_VERSION=$($BUMP_CMD 2>&1 | grep -oP 'New version: \K[^\s]+' || echo "")
+
+          if [ -z "$NEW_VERSION" ]; then
+            # Fallback to inferring version
+            NEW_VERSION=$(relicta infer-version | grep -oP 'Version: \K[^\s]+' || echo "v0.1.0")
+          fi
+
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "## Version Bump" >> $GITHUB_STEP_SUMMARY
+          echo "New version: **$NEW_VERSION**" >> $GITHUB_STEP_SUMMARY
+
+  generate-notes:
+    name: Generate Release Notes
+    needs: bump
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Generate notes
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "## Release Notes Preview" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -n "$OPENAI_API_KEY" ]; then
+            relicta notes --ai --audience developers --tone professional >> $GITHUB_STEP_SUMMARY
+          else
+            relicta notes >> $GITHUB_STEP_SUMMARY
+          fi
+
+  create-release-pr:
+    name: Create Release PR
+    needs: [bump, generate-notes]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Create release branch
+        run: |
+          VERSION=${{ needs.bump.outputs.new_version }}
+          BRANCH="release/${VERSION}"
+
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          git checkout -b "$BRANCH"
+
+          # Update CHANGELOG.md
+          relicta notes --format keep-a-changelog > CHANGELOG_NEW.md 2>/dev/null || true
+          if [ -f CHANGELOG_NEW.md ] && [ -s CHANGELOG_NEW.md ]; then
+            if [ -f CHANGELOG.md ]; then
+              cat CHANGELOG.md >> CHANGELOG_NEW.md
+            fi
+            mv CHANGELOG_NEW.md CHANGELOG.md
+            git add CHANGELOG.md
+            git commit -m "chore(release): update changelog for ${VERSION}" || true
+          fi
+
+          git push origin "$BRANCH"
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ needs.bump.outputs.new_version }}
+
+          gh pr create \
+            --title "Release ${VERSION}" \
+            --body "## Release ${VERSION}
+
+          This PR prepares the release of version ${VERSION}.
+
+          ### Checklist
+          - [ ] Changelog has been reviewed
+          - [ ] All tests pass
+          - [ ] Security scans pass
+          - [ ] Documentation is up to date
+
+          ### After Merge
+          Once this PR is merged, create and push the tag:
+          \`\`\`bash
+          git tag ${VERSION}
+          git push origin ${VERSION}
+          \`\`\`
+
+          This will trigger the release workflow." \
+            --base main \
+            --head "release/${VERSION}"
+
+  summary:
+    name: Summary
+    needs: [plan, validate, bump, create-release-pr]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## Release Preparation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Plan | ${{ needs.plan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validate | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Bump | ${{ needs.bump.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Create PR | ${{ needs.create-release-pr.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Proposed Version:** ${{ needs.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Risk Level:** ${{ needs.plan.outputs.risk }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Breaking Changes:** ${{ needs.plan.outputs.breaking }}" >> $GITHUB_STEP_SUMMARY

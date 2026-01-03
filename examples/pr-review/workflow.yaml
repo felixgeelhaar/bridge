@@ -1,0 +1,105 @@
+name: guarded-pr-review
+version: "1.0"
+description: AI-assisted pull request review with security analysis and approval gates
+
+triggers:
+  - type: github.pull_request
+    events:
+      - opened
+      - synchronize
+    filter: "!base.ref.startsWith('release/')"
+
+steps:
+  - name: fetch-changes
+    agent: file-reader
+    input:
+      action: get_pr_files
+      repo: ${{ trigger.repo.full_name }}
+      pr_number: ${{ trigger.pr.number }}
+    timeout: "2m"
+    retries: 2
+
+  - name: analyze-changes
+    agent: code-reviewer
+    input:
+      files: ${{ steps.fetch-changes.output.files }}
+      diff: ${{ steps.fetch-changes.output.diff }}
+      pr_title: ${{ trigger.pr.title }}
+      pr_body: ${{ trigger.pr.body }}
+      context:
+        repo: ${{ trigger.repo.full_name }}
+        base_ref: ${{ trigger.pr.base_ref }}
+        head_ref: ${{ trigger.pr.head_ref }}
+    timeout: "5m"
+    retries: 1
+
+  - name: security-scan
+    agent: security-analyst
+    input:
+      files: ${{ steps.fetch-changes.output.files }}
+      diff: ${{ steps.fetch-changes.output.diff }}
+      language_hints:
+        - auto-detect
+      checks:
+        - secrets
+        - vulnerabilities
+        - dependencies
+        - injection
+        - authentication
+    depends_on:
+      - fetch-changes
+    timeout: "3m"
+
+  - name: generate-review
+    agent: code-reviewer
+    requires_approval: true
+    input:
+      analysis: ${{ steps.analyze-changes.output }}
+      security: ${{ steps.security-scan.output }}
+      format: github_review
+      style:
+        max_comments: 10
+        priority_threshold: medium
+        include_suggestions: true
+    depends_on:
+      - analyze-changes
+      - security-scan
+    timeout: "5m"
+
+  - name: post-review
+    agent: github-commenter
+    input:
+      action: create_review
+      repo: ${{ trigger.repo.full_name }}
+      pr_number: ${{ trigger.pr.number }}
+      review: ${{ steps.generate-review.output }}
+      event: ${{ steps.generate-review.output.recommendation }}
+    depends_on:
+      - generate-review
+    timeout: "1m"
+    condition: "${{ steps.generate-review.output.should_post }}"
+
+policies:
+  - name: require-human-approval
+    rule: "steps.generate-review.requires_approval == true"
+    params:
+      approvers:
+        - "@team/security"
+        - "@team/leads"
+
+  - name: block-high-severity
+    rule: "steps.security-scan.output.severity != 'critical'"
+    params:
+      on_failure: block
+
+  - name: rate-limit
+    rule: "ratelimit(trigger.sender.login, '10/hour')"
+
+metadata:
+  owner: platform-team
+  notifications:
+    slack: "#code-review"
+    email: code-review@example.com
+  labels:
+    - ai-review
+    - automated

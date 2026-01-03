@@ -1,0 +1,95 @@
+version: '3.8'
+
+# Demo environment with pre-seeded data for demonstrations and testing.
+# Usage: docker-compose -f docker-compose.demo.yml up -d
+
+services:
+  bridge-demo:
+    build: .
+    container_name: bridge-demo
+    environment:
+      - ENV=demo
+      - LOG_LEVEL=debug
+      - DATABASE_URL=postgresql://demo:demo@demo-postgres:5432/bridge_demo?sslmode=disable
+      - RABBITMQ_URL=amqp://demo:demo@demo-rabbitmq:5672/
+      # Demo LLM keys (use mock provider in demo mode)
+      - DEMO_MODE=true
+    ports:
+      - "3000:8080"
+    depends_on:
+      demo-postgres:
+        condition: service_healthy
+      demo-rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./examples:/app/examples:ro
+      - ./policies:/app/policies:ro
+    networks:
+      - demo-network
+    restart: unless-stopped
+
+  demo-postgres:
+    image: postgres:16-alpine
+    container_name: bridge-demo-postgres
+    environment:
+      - POSTGRES_DB=bridge_demo
+      - POSTGRES_USER=demo
+      - POSTGRES_PASSWORD=demo
+    ports:
+      - "5433:5432"
+    volumes:
+      - demo_postgres_data:/var/lib/postgresql/data
+      - ./demo/seeds:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d bridge_demo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - demo-network
+    restart: unless-stopped
+
+  demo-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: bridge-demo-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    volumes:
+      - demo_rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - demo-network
+    restart: unless-stopped
+
+  # OPA for policy evaluation
+  demo-opa:
+    image: openpolicyagent/opa:latest
+    container_name: bridge-demo-opa
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "/policies"
+    ports:
+      - "8182:8181"
+    volumes:
+      - ./policies:/policies:ro
+    networks:
+      - demo-network
+    restart: unless-stopped
+
+volumes:
+  demo_postgres_data:
+  demo_rabbitmq_data:
+
+networks:
+  demo-network:
+    driver: bridge

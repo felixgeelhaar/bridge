@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge - AI Workflow Orchestration & Governance</title>
+    <meta name="description" content="Orchestrate AI workflows with policy governance, multi-provider LLM support, and comprehensive audit trails.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #06060a;
+            --bg-surface: #0d0d14;
+            --bg-elevated: #14141f;
+            --bg-hover: #1a1a28;
+
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+
+            --accent-cyan: #00d4ff;
+            --accent-cyan-dim: #00a8cc;
+            --accent-amber: #ffb800;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+
+            --glow-cyan: 0 0 40px rgba(0, 212, 255, 0.3);
+            --glow-amber: 0 0 40px rgba(255, 184, 0, 0.3);
+
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Outfit', sans-serif;
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 70%, transparent 100%);
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow--cyan {
+            background: var(--accent-cyan);
+            top: -200px;
+            left: 20%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-glow--purple {
+            background: var(--accent-purple);
+            top: 40%;
+            right: -100px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 20px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--bg-deep) 0%, transparent 100%);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-logo span {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--bg-elevated);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--bg-hover);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s var(--ease-out-expo) both;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.1s both;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin-bottom: 3rem;
+            font-weight: 400;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.3s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 1.8rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s var(--ease-out-expo);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-cyan-dim) 100%);
+            color: var(--bg-deep);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Terminal Preview */
+        .hero-terminal {
+            margin-top: 4rem;
+            width: 100%;
+            max-width: 700px;
+            animation: fadeInUp 0.8s var(--ease-out-expo) 0.4s both;
+        }
+
+        .terminal {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.05),
+                0 20px 50px -10px rgba(0,0,0,0.5);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot--red { background: #ff5f56; }
+        .terminal-dot--yellow { background: #ffbd2e; }
+        .terminal-dot--green { background: #27c93f; }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .terminal-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            opacity: 0;
+            animation: typeLine 0.3s ease forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(2) { animation-delay: 1s; }
+        .terminal-line:nth-child(3) { animation-delay: 1.5s; }
+        .terminal-line:nth-child(4) { animation-delay: 2s; }
+        .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+
+        @keyframes typeLine {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .terminal-prompt {
+            color: var(--accent-cyan);
+            user-select: none;
+        }
+
+        .terminal-cmd {
+            color: var(--text-primary);
+        }
+
+        .terminal-output {
+            color: var(--text-secondary);
+            padding-left: 1.5rem;
+        }
+
+        .terminal-success {
+            color: var(--accent-green);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Styles */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s var(--ease-out-expo);
+        }
+
+        .feature-card:hover {
+            background: var(--bg-elevated);
+            border-color: rgba(255,255,255,0.1);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Provider Logos */
+        .providers {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-surface);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .provider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .provider:hover {
+            opacity: 1;
+        }
+
+        .provider-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .provider-name {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Installation Section */
+        .install-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .install-card {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .install-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .install-card-icon {
+            font-size: 1.25rem;
+        }
+
+        .install-card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .install-card-body {
+            padding: 1rem 1.25rem;
+        }
+
+        .install-cmd {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-deep);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .install-cmd code {
+            flex: 1;
+            color: var(--accent-cyan);
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+        }
+
+        /* Code Example */
+        .code-example {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .code-tabs {
+            display: flex;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .code-tab {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .code-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .code-tab.active {
+            color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+        }
+
+        .code-keyword { color: var(--accent-purple); }
+        .code-string { color: var(--accent-green); }
+        .code-comment { color: var(--text-muted); font-style: italic; }
+        .code-property { color: var(--accent-cyan); }
+        .code-value { color: var(--accent-amber); }
+
+        /* Architecture Section */
+        .architecture {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 2rem auto 0;
+        }
+
+        .arch-layer {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .arch-label {
+            width: 120px;
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            flex-shrink: 0;
+        }
+
+        .arch-boxes {
+            flex: 1;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            flex: 1;
+            min-width: 100px;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .arch-box:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .arch-connector {
+            width: 120px;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 1rem;
+        }
+
+        .arch-connector svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 4rem 2rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .footer-brand svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .footer-brand span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .arch-layer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .arch-label {
+                width: auto;
+                text-align: left;
+            }
+
+            .arch-connector {
+                display: none;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow--cyan"></div>
+    <div class="bg-glow bg-glow--purple"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 16C4 16 8 8 16 8C24 8 28 16 28 16" stroke="url(#nav-grad)" stroke-width="3" stroke-linecap="round"/>
+                <path d="M4 16C4 16 8 24 16 24C24 24 28 16 28 16" stroke="url(#nav-grad)" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                <defs>
+                    <linearGradient id="nav-grad" x1="4" y1="16" x2="28" y2="16">
+                        <stop stop-color="#00d4ff"/>
+                        <stop offset="1" stop-color="#8b5cf6"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span>Bridge</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#installation">Install</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+        </ul>
+
+        <a href="https://github.com/felixgeelhaar/bridge" class="nav-cta" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            GitHub
+        </a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>Open Source</span>
+        </div>
+
+        <h1>
+            AI Workflows,<br>
+            <span class="gradient">Governed.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            Orchestrate multi-step AI workflows with policy enforcement,
+            approval gates, and comprehensive audit trails.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#installation" class="btn btn-primary">
+                Get Started
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <a href="https://github.com/felixgeelhaar/bridge" class="btn btn-secondary" target="_blank" rel="noopener">
+                View on GitHub
+            </a>
+        </div>
+
+        <div class="hero-terminal">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dot terminal-dot--red"></div>
+                    <div class="terminal-dot terminal-dot--yellow"></div>
+                    <div class="terminal-dot terminal-dot--green"></div>
+                    <div class="terminal-title">bridge — zsh</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">$</span>
+                        <span class="terminal-cmd">bridge run -w pr-review.yaml</span>
+                    </div>
+                    <div class="terminal-line terminal-output">
+                        ▸ Loading workflow: guarded-pr-review
+                    </div>
+                    <div class="terminal-line terminal-output">
+                        ▸ Executing step: analyze-changes (claude-sonnet-4-20250514)
+                    </div>
+                    <div class="terminal-line terminal-output">
+                        ▸ Policy check: require-human-approval → awaiting
+                    </div>
+                    <div class="terminal-line terminal-output terminal-success">
+                        ✓ Workflow completed in 12.4s
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Features</span>
+                <h2 class="section-title">Built for Production AI Workflows</h2>
+                <p class="section-subtitle">
+                    Everything you need to orchestrate, govern, and audit AI-powered automation.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔀</div>
+                    <h3>Multi-Provider LLM</h3>
+                    <p>Switch between Anthropic, OpenAI, Gemini, and Ollama with a single config change. Automatic failover and load balancing.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Policy Governance</h3>
+                    <p>Define approval requirements and compliance rules with OPA/Rego. Enforce policies before, during, and after execution.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Resilience Patterns</h3>
+                    <p>Built-in circuit breakers, retry logic, rate limiting, and timeouts. Keep your workflows running reliably.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>State Machines</h3>
+                    <p>Robust workflow state management with explicit transitions. Never lose track of where your workflow is.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>MCP Integration</h3>
+                    <p>Model Context Protocol support for tool bindings. Give your agents access to files, git, shell, and more.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Audit Trails</h3>
+                    <p>Comprehensive logging of every decision, action, and approval. Full compliance visibility.</p>
+                </div>
+            </div>
+
+            <div class="providers">
+                <div class="provider">
+                    <div class="provider-icon">🤖</div>
+                    <span class="provider-name">Anthropic</span>
+                </div>
+                <div class="provider">
+                    <div class="provider-icon">💚</div>
+                    <span class="provider-name">OpenAI</span>
+                </div>
+                <div class="provider">
+                    <div class="provider-icon">💎</div>
+                    <span class="provider-name">Gemini</span>
+                </div>
+                <div class="provider">
+                    <div class="provider-icon">🦙</div>
+                    <span class="provider-name">Ollama</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="installation">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Installation</span>
+                <h2 class="section-title">Get Started in Seconds</h2>
+                <p class="section-subtitle">
+                    Multiple ways to install Bridge on your system.
+                </p>
+            </div>
+
+            <div class="install-grid">
+                <div class="install-card">
+                    <div class="install-card-header">
+                        <span class="install-card-icon">📦</span>
+                        <span class="install-card-title">Quick Install</span>
+                    </div>
+                    <div class="install-card-body">
+                        <div class="install-cmd">
+                            <code>curl -sSL https://raw.githubusercontent.com/felixgeelhaar/bridge/main/install.sh | bash</code>
+                            <button class="copy-btn" onclick="copyToClipboard(this)" data-cmd="curl -sSL https://raw.githubusercontent.com/felixgeelhaar/bridge/main/install.sh | bash">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="install-card">
+                    <div class="install-card-header">
+                        <span class="install-card-icon">🍺</span>
+                        <span class="install-card-title">Homebrew</span>
+                    </div>
+                    <div class="install-card-body">
+                        <div class="install-cmd">
+                            <code>brew install felixgeelhaar/tap/bridge</code>
+                            <button class="copy-btn" onclick="copyToClipboard(this)" data-cmd="brew install felixgeelhaar/tap/bridge">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="install-card">
+                    <div class="install-card-header">
+                        <span class="install-card-icon">🐹</span>
+                        <span class="install-card-title">Go Install</span>
+                    </div>
+                    <div class="install-card-body">
+                        <div class="install-cmd">
+                            <code>go install github.com/felixgeelhaar/bridge/cmd/bridge@latest</code>
+                            <button class="copy-btn" onclick="copyToClipboard(this)" data-cmd="go install github.com/felixgeelhaar/bridge/cmd/bridge@latest">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="install-card">
+                    <div class="install-card-header">
+                        <span class="install-card-icon">🐳</span>
+                        <span class="install-card-title">Docker</span>
+                    </div>
+                    <div class="install-card-body">
+                        <div class="install-cmd">
+                            <code>docker run --rm ghcr.io/felixgeelhaar/bridge:latest --help</code>
+                            <button class="copy-btn" onclick="copyToClipboard(this)" data-cmd="docker run --rm ghcr.io/felixgeelhaar/bridge:latest --help">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Examples</span>
+                <h2 class="section-title">Define Workflows in YAML</h2>
+                <p class="section-subtitle">
+                    Simple, declarative workflow definitions with powerful capabilities.
+                </p>
+            </div>
+
+            <div class="code-example">
+                <div class="code-tabs">
+                    <button class="code-tab active">pr-review.yaml</button>
+                    <button class="code-tab">policy.rego</button>
+                </div>
+                <div class="code-content">
+                    <pre><span class="code-comment"># AI-assisted PR review with approval gate</span>
+<span class="code-property">name</span>: <span class="code-string">guarded-pr-review</span>
+<span class="code-property">version</span>: <span class="code-string">"1.0"</span>
+
+<span class="code-property">triggers</span>:
+  - <span class="code-property">type</span>: <span class="code-string">github.pull_request</span>
+    <span class="code-property">events</span>: [<span class="code-string">opened</span>, <span class="code-string">synchronize</span>]
+
+<span class="code-property">steps</span>:
+  - <span class="code-property">name</span>: <span class="code-string">analyze-changes</span>
+    <span class="code-property">agent</span>: <span class="code-string">code-reviewer</span>
+    <span class="code-property">input</span>:
+      <span class="code-property">pr_number</span>: <span class="code-value">${{ trigger.pr.number }}</span>
+      <span class="code-property">repo</span>: <span class="code-value">${{ trigger.repo.full_name }}</span>
+
+  - <span class="code-property">name</span>: <span class="code-string">security-scan</span>
+    <span class="code-property">agent</span>: <span class="code-string">security-analyst</span>
+    <span class="code-property">input</span>:
+      <span class="code-property">diff</span>: <span class="code-value">${{ steps.analyze-changes.output.diff }}</span>
+
+  - <span class="code-property">name</span>: <span class="code-string">generate-review</span>
+    <span class="code-property">agent</span>: <span class="code-string">code-reviewer</span>
+    <span class="code-property">requires_approval</span>: <span class="code-keyword">true</span>
+    <span class="code-property">input</span>:
+      <span class="code-property">analysis</span>: <span class="code-value">${{ steps.analyze-changes.output }}</span>
+      <span class="code-property">security</span>: <span class="code-value">${{ steps.security-scan.output }}</span>
+
+<span class="code-property">policies</span>:
+  - <span class="code-property">name</span>: <span class="code-string">require-human-approval</span>
+    <span class="code-property">rule</span>: <span class="code-string">steps.*.requires_approval == true</span></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Architecture</span>
+                <h2 class="section-title">Clean, Extensible Design</h2>
+                <p class="section-subtitle">
+                    Built with Domain-Driven Design and hexagonal architecture.
+                </p>
+            </div>
+
+            <div class="architecture">
+                <div class="arch-diagram">
+                    <div class="arch-layer">
+                        <span class="arch-label">Interfaces</span>
+                        <div class="arch-boxes">
+                            <div class="arch-box">CLI</div>
+                            <div class="arch-box">Webhooks</div>
+                            <div class="arch-box">API</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <div class="arch-connector">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12l7 7 7-7"/>
+                            </svg>
+                        </div>
+                        <div class="arch-boxes" style="opacity: 0; height: 0; overflow: hidden;"></div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <span class="arch-label">Application</span>
+                        <div class="arch-boxes">
+                            <div class="arch-box">Orchestrator</div>
+                            <div class="arch-box">Scheduler</div>
+                            <div class="arch-box">Executor</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <div class="arch-connector">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12l7 7 7-7"/>
+                            </svg>
+                        </div>
+                        <div class="arch-boxes" style="opacity: 0; height: 0; overflow: hidden;"></div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <span class="arch-label">Domain</span>
+                        <div class="arch-boxes">
+                            <div class="arch-box">Workflow</div>
+                            <div class="arch-box">Governance</div>
+                            <div class="arch-box">Agents</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <div class="arch-connector">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12l7 7 7-7"/>
+                            </svg>
+                        </div>
+                        <div class="arch-boxes" style="opacity: 0; height: 0; overflow: hidden;"></div>
+                    </div>
+
+                    <div class="arch-layer">
+                        <span class="arch-label">Infrastructure</span>
+                        <div class="arch-boxes">
+                            <div class="arch-box">PostgreSQL</div>
+                            <div class="arch-box">RabbitMQ</div>
+                            <div class="arch-box">LLM</div>
+                            <div class="arch-box">MCP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 16C4 16 8 8 16 8C24 8 28 16 28 16" stroke="url(#footer-grad)" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M4 16C4 16 8 24 16 24C24 24 28 16 28 16" stroke="url(#footer-grad)" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                    <defs>
+                        <linearGradient id="footer-grad" x1="4" y1="16" x2="28" y2="16">
+                            <stop stop-color="#00d4ff"/>
+                            <stop offset="1" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Bridge</span>
+            </div>
+
+            <div class="footer-links">
+                <a href="https://github.com/felixgeelhaar/bridge" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://github.com/felixgeelhaar/bridge/blob/main/README.md" target="_blank" rel="noopener">Documentation</a>
+                <a href="https://github.com/felixgeelhaar/bridge/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+            </div>
+
+            <div class="footer-copy">
+                © 2025 Felix Geelhaar
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function copyToClipboard(btn) {
+            const cmd = btn.dataset.cmd;
+            navigator.clipboard.writeText(cmd).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            });
+        }
+
+        // Code tabs
+        document.querySelectorAll('.code-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature-card, .install-card, .arch-box').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

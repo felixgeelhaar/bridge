@@ -1,0 +1,417 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (leave empty for auto)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Dry run (no actual release)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  GO_VERSION: '1.23'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # Governance validation using relicta
+  governance:
+    name: Release Governance
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      risk_level: ${{ steps.evaluate.outputs.risk_level }}
+      approved: ${{ steps.evaluate.outputs.approved }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            # Use relicta to infer version
+            VERSION=$(relicta infer-version --json | jq -r '.version')
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE < 50" | bc -l) )); then
+            echo "::error::Coverage ${COVERAGE}% is below minimum threshold of 50%"
+            exit 1
+          fi
+
+      - name: Install security tools
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          go install github.com/gitleaks/gitleaks/v8@latest
+
+      - name: Security scan (SAST)
+        run: gosec -severity=high -fmt=json -out=gosec-report.json ./... || true
+
+      - name: Vulnerability scan
+        run: govulncheck -json ./... > govulncheck-report.json || true
+
+      - name: Secrets scan
+        run: gitleaks detect --source=. --report-format=json --report-path=gitleaks-report.json || true
+
+      - name: Evaluate release risk
+        id: evaluate
+        run: |
+          # Check for high severity security issues
+          HIGH_ISSUES=$(jq '[.Issues[] | select(.severity == "HIGH")] | length' gosec-report.json 2>/dev/null || echo "0")
+          VULNS=$(jq '.vulns | length' govulncheck-report.json 2>/dev/null || echo "0")
+          SECRETS=$(jq '. | length' gitleaks-report.json 2>/dev/null || echo "0")
+
+          echo "High severity issues: $HIGH_ISSUES"
+          echo "Vulnerabilities: $VULNS"
+          echo "Leaked secrets: $SECRETS"
+
+          if [ "$SECRETS" -gt 0 ]; then
+            echo "::error::Leaked secrets detected - release blocked"
+            echo "risk_level=critical" >> $GITHUB_OUTPUT
+            echo "approved=false" >> $GITHUB_OUTPUT
+            exit 1
+          elif [ "$HIGH_ISSUES" -gt 0 ] || [ "$VULNS" -gt 0 ]; then
+            echo "::warning::Security issues detected - manual review required"
+            echo "risk_level=high" >> $GITHUB_OUTPUT
+            echo "approved=false" >> $GITHUB_OUTPUT
+          else
+            echo "risk_level=low" >> $GITHUB_OUTPUT
+            echo "approved=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            gosec-report.json
+            govulncheck-report.json
+            gitleaks-report.json
+            coverage.out
+
+  # Build binaries
+  build:
+    name: Build
+    needs: governance
+    if: needs.governance.outputs.approved == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build binaries
+        run: |
+          VERSION=${{ needs.governance.outputs.version }}
+          LDFLAGS="-s -w -X main.version=${VERSION} -X main.commit=${GITHUB_SHA} -X main.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          mkdir -p dist
+
+          # Linux
+          GOOS=linux GOARCH=amd64 go build -ldflags="${LDFLAGS}" -o dist/bridge-linux-amd64 ./cmd/bridge
+          GOOS=linux GOARCH=arm64 go build -ldflags="${LDFLAGS}" -o dist/bridge-linux-arm64 ./cmd/bridge
+
+          # macOS
+          GOOS=darwin GOARCH=amd64 go build -ldflags="${LDFLAGS}" -o dist/bridge-darwin-amd64 ./cmd/bridge
+          GOOS=darwin GOARCH=arm64 go build -ldflags="${LDFLAGS}" -o dist/bridge-darwin-arm64 ./cmd/bridge
+
+          # Windows
+          GOOS=windows GOARCH=amd64 go build -ldflags="${LDFLAGS}" -o dist/bridge-windows-amd64.exe ./cmd/bridge
+
+      - name: Create checksums
+        run: |
+          cd dist
+          sha256sum * > checksums.txt
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: dist/
+
+  # Generate changelog with relicta
+  changelog:
+    name: Generate Changelog
+    needs: governance
+    if: needs.governance.outputs.approved == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      notes: ${{ steps.notes.outputs.notes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install relicta
+        run: go install github.com/felixgeelhaar/relicta@latest
+
+      - name: Generate release notes
+        id: notes
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -n "$OPENAI_API_KEY" ]; then
+            # Use AI-generated release notes if API key available
+            relicta notes --ai --audience developers --tone professional > RELEASE_NOTES.md
+          else
+            # Fallback to conventional changelog
+            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            VERSION=${{ needs.governance.outputs.version }}
+
+            echo "## What's Changed in ${VERSION}" > RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+
+            if [ -n "$PREV_TAG" ]; then
+              # Group commits by type
+              echo "### Features" >> RELEASE_NOTES.md
+              git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD | grep -E "^- feat" >> RELEASE_NOTES.md || true
+              echo "" >> RELEASE_NOTES.md
+
+              echo "### Bug Fixes" >> RELEASE_NOTES.md
+              git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD | grep -E "^- fix" >> RELEASE_NOTES.md || true
+              echo "" >> RELEASE_NOTES.md
+
+              echo "### Other Changes" >> RELEASE_NOTES.md
+              git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD | grep -vE "^- (feat|fix)" >> RELEASE_NOTES.md || true
+            else
+              echo "Initial release" >> RELEASE_NOTES.md
+            fi
+          fi
+
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          cat RELEASE_NOTES.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: RELEASE_NOTES.md
+
+  # Publish release
+  publish:
+    name: Publish Release
+    needs: [governance, build, changelog]
+    if: (needs.governance.outputs.approved == 'true' || github.event_name == 'push') && !inputs.dry_run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+          path: dist/
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.governance.outputs.version }}
+          name: Bridge ${{ needs.governance.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          files: |
+            dist/bridge-*
+            dist/checksums.txt
+          draft: false
+          prerelease: ${{ contains(needs.governance.outputs.version, '-rc') || contains(needs.governance.outputs.version, '-beta') || contains(needs.governance.outputs.version, '-alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build and push Docker image
+  docker:
+    name: Docker Image
+    needs: [governance, publish]
+    if: (needs.governance.outputs.approved == 'true' || github.event_name == 'push') && !inputs.dry_run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=${{ needs.governance.outputs.version }}
+          echo "version=${VERSION#v}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}:latest
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            VERSION=${{ needs.governance.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Update Homebrew formula
+  homebrew:
+    name: Update Homebrew
+    needs: [governance, publish]
+    if: (needs.governance.outputs.approved == 'true' || github.event_name == 'push') && !inputs.dry_run && !contains(needs.governance.outputs.version, '-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: felixgeelhaar/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+
+      - name: Download checksums
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+          path: dist/
+
+      - name: Update formula
+        run: |
+          VERSION=${{ needs.governance.outputs.version }}
+          VERSION_NUM=${VERSION#v}
+
+          DARWIN_AMD64_SHA=$(grep "bridge-darwin-amd64$" dist/checksums.txt | awk '{print $1}')
+          DARWIN_ARM64_SHA=$(grep "bridge-darwin-arm64$" dist/checksums.txt | awk '{print $1}')
+          LINUX_AMD64_SHA=$(grep "bridge-linux-amd64$" dist/checksums.txt | awk '{print $1}')
+          LINUX_ARM64_SHA=$(grep "bridge-linux-arm64$" dist/checksums.txt | awk '{print $1}')
+
+          cat > homebrew-tap/Formula/bridge.rb << EOF
+          class Bridge < Formula
+            desc "AI workflow orchestration and governance platform"
+            homepage "https://github.com/felixgeelhaar/bridge"
+            version "${VERSION_NUM}"
+            license "MIT"
+
+            on_macos do
+              if Hardware::CPU.arm?
+                url "https://github.com/felixgeelhaar/bridge/releases/download/${VERSION}/bridge-darwin-arm64"
+                sha256 "${DARWIN_ARM64_SHA}"
+              else
+                url "https://github.com/felixgeelhaar/bridge/releases/download/${VERSION}/bridge-darwin-amd64"
+                sha256 "${DARWIN_AMD64_SHA}"
+              end
+            end
+
+            on_linux do
+              if Hardware::CPU.arm?
+                url "https://github.com/felixgeelhaar/bridge/releases/download/${VERSION}/bridge-linux-arm64"
+                sha256 "${LINUX_ARM64_SHA}"
+              else
+                url "https://github.com/felixgeelhaar/bridge/releases/download/${VERSION}/bridge-linux-amd64"
+                sha256 "${LINUX_AMD64_SHA}"
+              end
+            end
+
+            def install
+              binary_name = "bridge"
+              if OS.mac?
+                binary_name += Hardware::CPU.arm? ? "-darwin-arm64" : "-darwin-amd64"
+              else
+                binary_name += Hardware::CPU.arm? ? "-linux-arm64" : "-linux-amd64"
+              end
+              bin.install binary_name => "bridge"
+            end
+
+            test do
+              assert_match version.to_s, shell_output("#{bin}/bridge --version")
+            end
+          end
+          EOF
+
+      - name: Commit and push formula
+        working-directory: homebrew-tap
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add Formula/bridge.rb
+          git commit -m "Update bridge to ${{ needs.governance.outputs.version }}"
+          git push
+
+  # Summary
+  summary:
+    name: Release Summary
+    needs: [governance, build, changelog, publish, docker, homebrew]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Governance | ${{ needs.governance.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Changelog | ${{ needs.changelog.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Publish | ${{ needs.publish.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker | ${{ needs.docker.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Homebrew | ${{ needs.homebrew.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.governance.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Risk Level:** ${{ needs.governance.outputs.risk_level }}" >> $GITHUB_STEP_SUMMARY

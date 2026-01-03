@@ -1,0 +1,93 @@
+ai:
+  enabled: true
+  provider: openai
+  model: gpt-4
+  apikey: ${OPENAI_API_KEY}
+  tone: professional
+  audience: developers
+  includeemoji: false
+  maxtokens: 2048
+  temperature: 0.7
+  timeout: 30s
+  retryattempts: 3
+
+changelog:
+  file: CHANGELOG.md
+  format: keep-a-changelog
+  productname: Bridge
+  groupby: type
+  includecommithash: true
+  includeauthor: true
+  includedate: true
+  linkcommits: true
+  linkissues: true
+  repositoryurl: https://github.com/felixgeelhaar/bridge
+  issueurl: https://github.com/felixgeelhaar/bridge/issues
+  exclude:
+    - chore
+    - ci
+    - style
+  categories:
+    feat: Features
+    fix: Bug Fixes
+    perf: Performance
+    refactor: Refactoring
+    docs: Documentation
+    test: Testing
+    build: Build System
+    revert: Reverts
+
+output:
+  format: text
+  color: true
+  verbose: false
+  quiet: false
+  loglevel: info
+
+plugins:
+  - name: github
+    enabled: true
+    config:
+      draft: false
+      generateReleaseNotes: true
+    timeout: 60s
+    continueonerror: false
+
+  - name: homebrew
+    enabled: true
+    config:
+      tap: felixgeelhaar/tap
+      formula: bridge
+      homepage: https://github.com/felixgeelhaar/bridge
+      description: AI workflow orchestration and governance platform
+      license: MIT
+    timeout: 30s
+
+versioning:
+  strategy: conventional
+  tagprefix: v
+  gittag: true
+  gitpush: true
+  gitsign: true
+  bumpfrom: tag
+
+workflow:
+  requireapproval: true
+  allowedbranches:
+    - main
+  requirecleanworkingtree: true
+  requireuptodate: true
+  dryrunbydefault: false
+  autocommitchangelog: true
+  changelogcommitmessage: 'chore(release): update changelog for ${version}'
+  prereleasehook: make test
+  postreleasehook: ""
+
+governance:
+  riskthresholds:
+    low: 0.3
+    medium: 0.6
+    high: 0.8
+  requiresecurityscan: true
+  requiretests: true
+  mincoverage: 50
