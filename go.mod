@@ -1,6 +1,6 @@
 module github.com/felixgeelhaar/bridge
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/google/uuid v1.6.0
@@ -16,7 +16,7 @@ require (
 	github.com/felixgeelhaar/fortify v1.1.3-0.20260103140816-333b8e495bdf
 	github.com/felixgeelhaar/mcp-go v1.4.0
 	github.com/felixgeelhaar/statekit v1.0.1
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/rabbitmq/amqp091-go v1.10.0
 )
 
