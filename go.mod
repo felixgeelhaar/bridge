@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/open-policy-agent/opa v1.17.0
+	github.com/open-policy-agent/opa v1.17.1
 	github.com/urfave/cli/v2 v2.27.7
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
