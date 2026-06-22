@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/open-policy-agent/opa v1.17.0
+	github.com/open-policy-agent/opa v1.17.1
 	github.com/urfave/cli/v2 v2.27.7
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
@@ -17,7 +17,7 @@ require (
 	github.com/felixgeelhaar/mcp-go v1.14.0
 	github.com/felixgeelhaar/statekit v1.7.0
 	github.com/jackc/pgx/v5 v5.10.0
-	github.com/rabbitmq/amqp091-go v1.11.0
+	github.com/rabbitmq/amqp091-go v1.12.0
 )
 
 require (
