@@ -113,7 +113,7 @@ func (p *ResilientProvider) Complete(ctx context.Context, req *CompletionRequest
 	// Apply patterns: Timeout -> CircuitBreaker -> Retry -> Provider
 	resp, err := p.timeout.Execute(ctx, p.config.Timeout, func(ctx context.Context) (*CompletionResponse, error) {
 		return p.circuitBreaker.Execute(ctx, func(ctx context.Context) (*CompletionResponse, error) {
-			return p.retry.Do(ctx, func(ctx context.Context) (*CompletionResponse, error) {
+			return p.retry.Execute(ctx, func(ctx context.Context) (*CompletionResponse, error) {
 				return p.provider.Complete(ctx, req)
 			})
 		})
