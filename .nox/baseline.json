@@ -1,0 +1,411 @@
+{
+  "schema_version": "1.0.0",
+  "entries": [
+    {
+      "fingerprint": "e24fbea06b09bea70dacb9e3b590e2be11610d55ecc0b20b7b3d5b5f409a257b",
+      "rule_id": "AI-036",
+      "file_path": "internal/infrastructure/llm/openai.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "f87561db981095963155e0a041012f47d728048c8725e18e4ade44c767569297",
+      "rule_id": "CONT-001",
+      "file_path": "Dockerfile",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "a8c460542adf2109bf09ee1230cb624e4f267fe46201638b21b22e5104a72384",
+      "rule_id": "CONT-001",
+      "file_path": "Dockerfile",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "4a6a7b002c9acb1dbbd24b4fafaa5de7d362e9eb8827f4baf88d8bef5d47232b",
+      "rule_id": "DATA-001",
+      "file_path": ".github/workflows/release-prepare.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "7d09d75bb92e0836fbb00485c81e6f4235dc5620fe6c0def80717cf3916e4db5",
+      "rule_id": "DATA-001",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "1c2d8d1203052ce1641d3558949d6d8d58651f37cda9da55e372d955037b954b",
+      "rule_id": "DATA-001",
+      "file_path": "examples/pr-review/workflow.yaml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "0409a392ee82264d96f47287d0724b8148dd3f9db60c08dd01448869fc8df7bf",
+      "rule_id": "DATA-001",
+      "file_path": "internal/domain/governance/audit_test.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "07676ecfd0a735b85e49546b982a8ed377676133d1d5aa5cc0d6ca5fb4f36768",
+      "rule_id": "DATA-001",
+      "file_path": "internal/domain/governance/audit_test.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "b3b7a7614cd0a705e5a01d4cc420185b1a3607721afe9ca9d5e06c8d2973f400",
+      "rule_id": "DATA-001",
+      "file_path": "internal/infrastructure/github/client_test.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "fb6fc22c26f38007042aecabd9ba47b63af27c7e9e6df1a60129ed8898014778",
+      "rule_id": "DATA-001",
+      "file_path": "internal/infrastructure/github/webhook_test.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "d45e3c087c0f7e8daf00da9758a754027adda51cd08414162930c3124396c271",
+      "rule_id": "DATA-001",
+      "file_path": "internal/infrastructure/github/webhook_test.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "cd4fbe35a111804b87d26af6d3e7ed0bdd7e18751cac3c77ae49da1c1afcb2b2",
+      "rule_id": "DATA-001",
+      "file_path": "internal/infrastructure/github/webhook_test.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "4ff0b96c015fd5af9217bbd7de4fd6507acf2146ebecf2d7beff107d2206beb2",
+      "rule_id": "DATA-005",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "305acf682a67637ba7104449d9c38f93bd08c51f0693160144e62c28dad188fd",
+      "rule_id": "DATA-005",
+      "file_path": "docker-compose.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "c77847c164c1c3534484a1a594084222d052984d0c9a4c5a1c7ad92e584a3b1e",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "0b211fd7a614887199492f5942e3390bbb38b993647e973516fc83a3bb730f6a",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "956cb66e1980efd7492bb7c3af5663f6ead86f5a561a061b0316fa1e6661b091",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "59c58369067b5ae3835ca09c30c35799c893657dec95cc98eac731b95f2345a4",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "bbcc649cb24b6b89b1c1b6f1170c329d76515f55bc33d97bd53c06fde9e6e0f9",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "80fe34e0d23601b84fb126fad780e77ea348561ce886e02d6c9a3f514250ae53",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "94f672ce35041699d045ab1fdf966911e10b19bdd0f088b4ec2c1d6c47e1917b",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "323508956e3d44083d94b4e303166c7206994741f9644bea909f8e1a7d78d6d4",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "57bd84b4a235b6f3dffdfe61c066f79373d5deed0d1eca48bcca7ec08aae5172",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "ae29145fedfedb8aa33167097d46228c24239cc81462837af6022e1ac19c108c",
+      "rule_id": "IAC-013",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "bc549bd83bda47b0f1e5c6cb3fc9d67db65f4fbd72cdd30697bdbc6657d167bb",
+      "rule_id": "IAC-018",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "67d9f0cba886e4c0c8eea62a89e63a6828eee1ed46307c4da68ded1268ea94b6",
+      "rule_id": "IAC-157",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "8896541bc65ee3423f4a91e295864ee76d25a2efd9aa81f99241623fe7e7e83c",
+      "rule_id": "IAC-231",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "3877966311b0b758b7778ed319ecbbd4a0370a658acc5ae99f963426a5d6af1a",
+      "rule_id": "IAC-231",
+      "file_path": "docker-compose.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "85b9a249c9b2c39615bb21c9e956c7fcf970fd3f12d98e457f4796f2a38a8343",
+      "rule_id": "IAC-254",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "info",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "52922952e40b8c5ebd4fef0969dd782d57266e9ecccc4e9bddc9be74f0f6daa2",
+      "rule_id": "IAC-308",
+      "file_path": ".github/workflows/nox-remediate.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "f23f105694538952ffaba7189f69c9a697bdf0a790170ddb3e2cd4b344edc02c",
+      "rule_id": "IAC-308",
+      "file_path": ".github/workflows/release-prepare.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "cc3fd855f1a5badf59b08227135b4d796c3509913767ccdb34f1d3cebf0c8984",
+      "rule_id": "IAC-308",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "530e8464b73bb94d797aa233bcd4b2ea933dd8644a2b0a15d0bb6b7ba128980d",
+      "rule_id": "IAC-309",
+      "file_path": ".github/workflows/nox-scan.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "faae53eee5aab123b480b37ae6df3775272ea7eb6546c6b64ee45cf14a19b173",
+      "rule_id": "IAC-310",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "8378df7a1d4adb5806616a668bc89e456b48fe9b7212ca5799b5b8eddbe0ae9c",
+      "rule_id": "IAC-314",
+      "file_path": ".github/workflows/nox-remediate.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "abd3c9a9c581f646db18d32013db463bf30a88cc84a3d0a5c6cc1f615eafdd67",
+      "rule_id": "IAC-314",
+      "file_path": ".github/workflows/release-prepare.yml",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "e37e2faa5f7d812400d1323a31d22e93b710b881ea06f3b656d724454d47a8f4",
+      "rule_id": "IAC-314",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "1645d3eb444cc758472ac737890e1e3e59ccbb14db638ce3a0d5586e023e1a23",
+      "rule_id": "IAC-315",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "67d1566bc98dd13ba7ce93f32980089dd18f1516c29d70443f17566e2ea4dea6",
+      "rule_id": "IAC-315",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "low",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "77044c57e30418203ae9a3061552236bd53674f38b0c16daba85448364cbaa11",
+      "rule_id": "IAC-351",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "info",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "3086546adda814f661f2b17f7874be9584bb6de22fbb7303f230d16529f6c154",
+      "rule_id": "SEC-073",
+      "file_path": ".env.example",
+      "severity": "critical",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "54d3894c318b1dfc6b3d9b928808928423903817f06fc58abec0b879ad98520f",
+      "rule_id": "SEC-073",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "info",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "e2ff6f0b97fe5fdc0e4f6873da1eac03cba43a6045e7334e508cfbf26c1c1429",
+      "rule_id": "SEC-073",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "critical",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "f5cf5023d8efad61c15064f77eda8148e41cba98495f01d0cdf0bb1d12d74af9",
+      "rule_id": "SEC-073",
+      "file_path": "docker-compose.yml",
+      "severity": "critical",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "fc2de7fac64cf5478c3d0c6d7be8561e4a6c50b858286edc03fde4d6fa2c1f5a",
+      "rule_id": "SEC-073",
+      "file_path": "internal/infrastructure/persistence/postgres/connection.go",
+      "severity": "critical",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "74c13ba4ceb838962b7df270dcdeb1add7c658eb0353a35160c4f6b719d7f8d0",
+      "rule_id": "SEC-163",
+      "file_path": "internal/infrastructure/llm/gemini.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "490ea51db71d8397dd2db35dfc13a62d6ef04e2bbd01176e57b95a132b2a29d4",
+      "rule_id": "SEC-163",
+      "file_path": "internal/infrastructure/llm/ollama.go",
+      "severity": "medium",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "e0580c48c144b989723b79a0eea0c2d96eeb9bc1434dce7282d2d37f80fd6e2b",
+      "rule_id": "SEC-356",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "d8ceeccdc32349f0509f59d8fd34d8045a54bfdb31971e38efb40f69ddac2559",
+      "rule_id": "SEC-356",
+      "file_path": "docker-compose.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "4f16a37e858018ff10294608eaa3639c4db3433a9127b4403542a66d8a27afc7",
+      "rule_id": "SEC-430",
+      "file_path": ".env.example",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "394e5b3fedcd2b42fb6c80ed9af7a0641800dedf502cb75c1586b303bf0bba70",
+      "rule_id": "SEC-430",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "info",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "55a87892c73632605ae775812f9ac73b6f88f22213132ee72f9ac6a92e75a47b",
+      "rule_id": "SEC-430",
+      "file_path": "internal/infrastructure/persistence/postgres/connection.go",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "09206316e7df5629624a082885adad8bc665ad418d2761df517f62d8cb73d15f",
+      "rule_id": "SEC-435",
+      "file_path": "internal/infrastructure/github/client_test.go",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "7a74fef74dcde0dc5b7ef897f29b0742e2fa479995e70c3ad39a6a4ff4a340c7",
+      "rule_id": "SEC-461",
+      "file_path": ".env.example",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "9bc9ae5428fa0c99dce8d74c717fcbc16f5ee70cbdb4f7f0990f122e4e0da177",
+      "rule_id": "SEC-461",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "b0088028b457f6b9b447d174bbf2fce755d72eb82cc9d3d75cd8aa3e5e6163a2",
+      "rule_id": "SEC-461",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "22c109a266796bc122a3b8b6fbb6ffc9ae51849e6f97b7cf000d6080f69f444b",
+      "rule_id": "SEC-461",
+      "file_path": "docker-compose.yml",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "777dfcd2e37f7e74f28cea51b3297be21f796068908e53a7f5b44c32d5c4c603",
+      "rule_id": "SEC-461",
+      "file_path": "internal/infrastructure/messaging/rabbitmq/connection.go",
+      "severity": "high",
+      "created_at": "2026-07-11T11:14:52.745463Z"
+    }
+  ]
+}
