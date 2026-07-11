@@ -72,3 +72,6 @@ CHANGELOG_NEW.md
 __debug_bin*
 .playwright-mcp/
 .claude/
+
+# nox scan output (baseline at .nox/baseline.json is tracked)
+nox-results/
