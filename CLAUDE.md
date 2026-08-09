@@ -10,7 +10,7 @@ Bridge is a governance and orchestration layer for AI-driven software developmen
 
 - **Language**: Go 1.23+
 - **Architecture**: DDD + event-driven + hexagonal
-- **State Management**: felixgeelhaar/statekit
+- **State Management**: go.klarlabs.de/statekit
 - **Logging**: felixgeelhaar/bolt (zero-allocation, structured)
 - **Resilience**: felixgeelhaar/fortify (circuit breaker, retry, rate limiting)
 - **MCP**: felixgeelhaar/mcp-go (agent tool bindings)
@@ -26,7 +26,7 @@ logger := bolt.New(bolt.NewJSONHandler(os.Stdout))
 logger.Info().Str("run_id", id).Msg("Workflow started")
 ```
 
-### felixgeelhaar/statekit - State Machines
+### go.klarlabs.de/statekit - State Machines
 ```go
 machine, _ := statekit.NewMachine[Context]("workflow").
     WithInitial("pending").

@@ -10,7 +10,7 @@ Bridge enables teams to define, execute, and govern AI-powered workflows with bu
 - **Multi-Provider LLM Support**: Anthropic Claude, OpenAI GPT, Google Gemini, and local Ollama models
 - **Policy Governance**: OPA/Rego-based policy engine for approval requirements and compliance
 - **Resilience Patterns**: Circuit breakers, retry logic, rate limiting, and timeouts via [fortify](https://github.com/felixgeelhaar/fortify)
-- **State Machine Workflows**: Robust workflow state management via [statekit](https://github.com/felixgeelhaar/statekit)
+- **State Machine Workflows**: Robust workflow state management via [statekit](https://go.klarlabs.de/statekit)
 - **MCP Integration**: Model Context Protocol support for tool bindings via [mcp-go](https://github.com/felixgeelhaar/mcp-go)
 - **Structured Logging**: Consistent observability via [bolt](https://github.com/felixgeelhaar/bolt)
 - **GitHub Integration**: PR review workflows with webhook support
@@ -350,7 +350,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 Built with:
 - [bolt](https://github.com/felixgeelhaar/bolt) - Structured logging
 - [fortify](https://github.com/felixgeelhaar/fortify) - Resilience patterns
-- [statekit](https://github.com/felixgeelhaar/statekit) - State machines
+- [statekit](https://go.klarlabs.de/statekit) - State machines
 - [mcp-go](https://github.com/felixgeelhaar/mcp-go) - MCP protocol
 - [relicta](https://github.com/felixgeelhaar/relicta) - Release governance
 - [OPA](https://www.openpolicyagent.org/) - Policy engine
