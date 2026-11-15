@@ -1,5 +1,7 @@
 # Bridge
 
+[![nox security grade](.github/nox-badge.svg)](.github/workflows/nox-scan.yml)
+
 AI Workflow Orchestration & Governance Platform
 
 Bridge enables teams to define, execute, and govern AI-powered workflows with built-in policy enforcement, approval gates, and comprehensive audit trails.
