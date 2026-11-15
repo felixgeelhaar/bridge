@@ -406,6 +406,105 @@
       "file_path": "internal/infrastructure/messaging/rabbitmq/connection.go",
       "severity": "high",
       "created_at": "2026-07-11T11:14:52.745463Z"
+    },
+    {
+      "fingerprint": "8dc2f6a3b16ca0aaf2633ba06508a17149f24c911c646d418ce8d4af3bf0a3f9",
+      "rule_id": "SEC-085",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "high",
+      "reason": "Ephemeral CI service container (rabbitmq:3 on the job runner) using the broker's built-in default account; not a deployed or production credential",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:55:37.796906Z"
+    },
+    {
+      "fingerprint": "41131eda8752e6de09401f8c4866ec55ec1e19705e88f31926584175a8567eb1",
+      "rule_id": "VULN-001",
+      "file_path": "Dockerfile",
+      "severity": "medium",
+      "reason": "alpine:3.23 base-image digest still ships zlib 1.3.2-r1 (ALPINE-CVE-2026-4738); no newer base tag exists. The Dockerfile runs 'apk upgrade zlib' in both stages and the built image contains zlib 1.4-r0 (verified), which the scanner cannot see from the base image alone",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:00.531256Z"
+    },
+    {
+      "fingerprint": "9bdf8dfbe5b5680c3e171f9147ff4a08141abae3a93c6d9c4d2fe69805933946",
+      "rule_id": "VULN-001",
+      "file_path": "go.mod",
+      "severity": "info",
+      "reason": "alpine:3.23 base-image digest still ships zlib 1.3.2-r1 (ALPINE-CVE-2026-4738); no newer base tag exists. The Dockerfile runs 'apk upgrade zlib' in both stages and the built image contains zlib 1.4-r0 (verified), which the scanner cannot see from the base image alone",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:00.531256Z"
+    },
+    {
+      "fingerprint": "a578073a5bb0e04041fb6c4aed7e7a9e5dceecf23ee150b1a53ee89d7dee4c29",
+      "rule_id": "VULN-001",
+      "file_path": "go.mod",
+      "severity": "info",
+      "reason": "alpine:3.23 base-image digest still ships zlib 1.3.2-r1 (ALPINE-CVE-2026-4738); no newer base tag exists. The Dockerfile runs 'apk upgrade zlib' in both stages and the built image contains zlib 1.4-r0 (verified), which the scanner cannot see from the base image alone",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:00.531256Z"
+    },
+    {
+      "fingerprint": "efffd45e45bdf218052ebd23a0a2fc2295219290f6341d868fed455c871b6993",
+      "rule_id": "IAC-155",
+      "file_path": ".github/workflows/nox-remediate.yml",
+      "severity": "medium",
+      "reason": "workflow_dispatch needs repository write access to trigger; environment approval is not configured for this repo and would add no control beyond branch protection and tag rules",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:15.991432Z"
+    },
+    {
+      "fingerprint": "bc51f05a1377594a094d63e2782646d60e7742147db7e6137662f92a432e9113",
+      "rule_id": "IAC-155",
+      "file_path": ".github/workflows/release-prepare.yml",
+      "severity": "medium",
+      "reason": "workflow_dispatch needs repository write access to trigger; environment approval is not configured for this repo and would add no control beyond branch protection and tag rules",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:15.991432Z"
+    },
+    {
+      "fingerprint": "09d79998b5c7424a284b643b53815f6c9ba525b7adfd07bbadfde073aac67c21",
+      "rule_id": "IAC-155",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "medium",
+      "reason": "workflow_dispatch needs repository write access to trigger; environment approval is not configured for this repo and would add no control beyond branch protection and tag rules",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:15.991432Z"
+    },
+    {
+      "fingerprint": "0b616c22f622f9f7c0305ba95cc4a06f162c81308c96e1543e312da993a54363",
+      "rule_id": "IAC-153",
+      "file_path": ".github/workflows/ci.yml",
+      "severity": "medium",
+      "reason": "Artifact is a CI coverage/scan report retained 7 days, not a distributed release artifact; build provenance attestation does not apply",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:33.489343Z"
+    },
+    {
+      "fingerprint": "97ad188e0785ddce4eefe6d2d1e10de2c1c850dcab14aa15399d987f5cb53c29",
+      "rule_id": "IAC-153",
+      "file_path": ".github/workflows/release.yml",
+      "severity": "medium",
+      "reason": "Artifact is a CI coverage/scan report retained 7 days, not a distributed release artifact; build provenance attestation does not apply",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:33.489343Z"
+    },
+    {
+      "fingerprint": "739e462b5efd69933915ec7ad09def3fc36e907a51f855cc4986fe4b7c05c1b8",
+      "rule_id": "IAC-018",
+      "file_path": ".github/workflows/nox-scan.yml",
+      "severity": "low",
+      "reason": "Optional taint-analysis plugin install: a plugin registry outage must not fail the security job (file is replaced by the shared nox workflow in PR #36)",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:57:01.798191Z"
+    },
+    {
+      "fingerprint": "41131eda8752e6de09401f8c4866ec55ec1e19705e88f31926584175a8567eb1",
+      "rule_id": "VULN-001",
+      "file_path": "Dockerfile",
+      "severity": "medium",
+      "reason": "golang:1.26-alpine builder stage digest also ships zlib 1.3.2-r1 (ALPINE-CVE-2026-4738); the stage runs 'apk upgrade zlib' (1.4-r0) and the stage is not part of the shipped image",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T10:56:00.531256Z"
     }
   ]
 }
