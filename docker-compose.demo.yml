@@ -6,12 +6,14 @@ version: '3.8'
 services:
   bridge-demo:
     build: .
+    mem_limit: 512m
+    cpus: 1.0
     container_name: bridge-demo
     environment:
       - ENV=demo
       - LOG_LEVEL=debug
-      - DATABASE_URL=postgresql://demo:demo@demo-postgres:5432/bridge_demo?sslmode=disable
-      - RABBITMQ_URL=amqp://demo:demo@demo-rabbitmq:5672/
+      - DATABASE_URL=postgresql://demo:${DEMO_DB_PASSWORD:-demo}@demo-postgres:5432/bridge_demo?sslmode=disable
+      - RABBITMQ_URL=amqp://demo:${DEMO_MQ_PASSWORD:-demo}@demo-rabbitmq:5672/
       # Demo LLM keys (use mock provider in demo mode)
       - DEMO_MODE=true
     ports:
@@ -26,20 +28,27 @@ services:
       - ./policies:/app/policies:ro
     networks:
       - demo-network
+    healthcheck:
+      test: ["CMD", "bridge", "--version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   demo-postgres:
     image: postgres:16-alpine
+    mem_limit: 1g
+    cpus: 1.0
     container_name: bridge-demo-postgres
     environment:
       - POSTGRES_DB=bridge_demo
       - POSTGRES_USER=demo
-      - POSTGRES_PASSWORD=demo
+      - POSTGRES_PASSWORD=${DEMO_DB_PASSWORD:-demo}
     ports:
       - "5433:5432"
     volumes:
       - demo_postgres_data:/var/lib/postgresql/data
-      - ./demo/seeds:/docker-entrypoint-initdb.d
+      - ./demo/seeds:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U demo -d bridge_demo"]
       interval: 5s
@@ -51,10 +60,12 @@ services:
 
   demo-rabbitmq:
     image: rabbitmq:3-management-alpine
+    mem_limit: 1g
+    cpus: 1.0
     container_name: bridge-demo-rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=demo
-      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_DEFAULT_PASS=${DEMO_MQ_PASSWORD:-demo}
     ports:
       - "5673:5672"
       - "15673:15672"
@@ -71,7 +82,9 @@ services:
 
   # OPA for policy evaluation
   demo-opa:
-    image: openpolicyagent/opa:latest
+    image: openpolicyagent/opa:1.22.4-debug@sha256:bc5909a9ee68feaac292690909361ec489383dad61e72e5c7e84696fab041977
+    mem_limit: 256m
+    cpus: 0.5
     container_name: bridge-demo-opa
     command:
       - "run"
@@ -84,6 +97,11 @@ services:
       - ./policies:/policies:ro
     networks:
       - demo-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8181/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
 volumes:
