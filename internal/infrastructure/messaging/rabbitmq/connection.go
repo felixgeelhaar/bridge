@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"context"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -19,10 +20,19 @@ type Config struct {
 	PrefetchGlobal bool
 }
 
-// DefaultConfig returns a default configuration.
+// defaultURL is used when RABBITMQ_URL is unset. It carries no credentials; the
+// AMQP client falls back to the broker's built-in local account.
+const defaultURL = "amqp://localhost:5672/"
+
+// DefaultConfig returns a default configuration. The broker URL is read from
+// the RABBITMQ_URL environment variable.
 func DefaultConfig() *Config {
+	url := os.Getenv("RABBITMQ_URL")
+	if url == "" {
+		url = defaultURL
+	}
 	return &Config{
-		URL:            "amqp://guest:guest@localhost:5672/",
+		URL:            url,
 		ReconnectDelay: 5 * time.Second,
 		MaxReconnects:  10,
 		PrefetchCount:  10,
