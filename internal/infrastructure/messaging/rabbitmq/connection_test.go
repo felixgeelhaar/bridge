@@ -6,8 +6,8 @@ import (
 )
 
 func TestDefaultConfigURLFromEnvironment(t *testing.T) {
-	t.Setenv("RABBITMQ_URL", "amqp://svc:secret@broker:5672/")
-	if got := DefaultConfig().URL; got != "amqp://svc:secret@broker:5672/" {
+	t.Setenv("RABBITMQ_URL", "url-from-environment")
+	if got := DefaultConfig().URL; got != "url-from-environment" {
 		t.Fatalf("URL = %q, want value from RABBITMQ_URL", got)
 	}
 }

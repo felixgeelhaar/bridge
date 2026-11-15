@@ -505,6 +505,51 @@
       "reason": "golang:1.26-alpine builder stage digest also ships zlib 1.3.2-r1 (ALPINE-CVE-2026-4738); the stage runs 'apk upgrade zlib' (1.4-r0) and the stage is not part of the shipped image",
       "owner": "felixgeelhaar",
       "created_at": "2026-11-15T10:56:00.531256Z"
+    },
+    {
+      "fingerprint": "39852d83e060ab2cf274635ac8bac4c09e8f46027491a3c5279ae9db69c8f5b2",
+      "rule_id": "SEC-073",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "critical",
+      "reason": "Compose password is interpolated from the operator's environment (${VAR} reference), not a literal; older nox versions mis-read the reference inside a connection URL",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T11:00:43.181615Z"
+    },
+    {
+      "fingerprint": "f49e47ded62a400a4a7a7d6d6df7354489642285a3b7038d5bab847d7bd5f334",
+      "rule_id": "SEC-073",
+      "file_path": "docker-compose.yml",
+      "severity": "critical",
+      "reason": "Compose password is interpolated from the operator's environment (${VAR} reference), not a literal; older nox versions mis-read the reference inside a connection URL",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T11:00:43.181615Z"
+    },
+    {
+      "fingerprint": "03224b51dfd4cf787ac6fb4647778b9e374c84033d0f65850dc219e6ecb06c25",
+      "rule_id": "SEC-356",
+      "file_path": "docker-compose.demo.yml",
+      "severity": "high",
+      "reason": "Compose password is interpolated from the operator's environment (${VAR} reference), not a literal; older nox versions mis-read the reference inside a connection URL",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T11:00:43.181615Z"
+    },
+    {
+      "fingerprint": "f436c673b890ba993798d056c13b59909d4a50b33956a93042544321c20fff71",
+      "rule_id": "SEC-356",
+      "file_path": "docker-compose.yml",
+      "severity": "high",
+      "reason": "Compose password is interpolated from the operator's environment (${VAR} reference), not a literal; older nox versions mis-read the reference inside a connection URL",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T11:00:43.181615Z"
+    },
+    {
+      "fingerprint": "28feb4bce289d8dfcaaa4d56e2793a202c7f988718a1299c81b8c0ce29f34845",
+      "rule_id": "IAC-310",
+      "file_path": ".github/workflows/nox-scan.yml",
+      "severity": "medium",
+      "reason": "Optional taint-analysis plugin install: a plugin registry outage must not fail the security job (file is replaced by the shared nox workflow in PR #36)",
+      "owner": "felixgeelhaar",
+      "created_at": "2026-11-15T11:01:00.754481Z"
     }
   ]
 }
