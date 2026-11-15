@@ -29,7 +29,7 @@ Be respectful and constructive in all interactions. We're building something tog
    make tools
    ```
 
-4. Start development environment:
+4. Start development environment (set `POSTGRES_PASSWORD` and `RABBITMQ_PASSWORD` in `.env` first, see `.env.example`):
    ```bash
    docker-compose up -d
    ```

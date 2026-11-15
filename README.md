@@ -228,6 +228,8 @@ make all
 
 ### Start Development Environment
 
+Set `POSTGRES_PASSWORD` and `RABBITMQ_PASSWORD` (for example in a `.env` file, see `.env.example`) first; compose refuses to start without them.
+
 ```bash
 docker-compose up -d
 ```
